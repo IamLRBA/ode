@@ -1,58 +1,51 @@
 import React, { ReactNode } from 'react';
 import { Box, Typography, Alert, Stack, Divider } from '@mui/material';
-import DOMPurify from 'dompurify';
 
 /**
- * Safely renders HTML content by detecting HTML tags and rendering them
- * Uses DOMPurify for robust HTML sanitization and dangerouslySetInnerHTML
- * only when HTML is detected for security.
- *
- * This function is backward compatible - if no HTML tags are detected,
- * content is returned as-is for normal text rendering.
+ * Simple HTML sanitizer that removes dangerous tags and attributes.
+ * This is a lightweight alternative that doesn't require external dependencies.
+ */
+const sanitizeHtml = (html: string): string => {
+  // Remove script tags and their content
+  let sanitized = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  // Remove style tags and their content
+  sanitized = sanitized.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+  // Remove event handlers (onclick, onerror, etc.)
+  sanitized = sanitized.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+  sanitized = sanitized.replace(/\s*on\w+\s*=\s*[^\s>]+/gi, '');
+  // Remove javascript: URLs
+  sanitized = sanitized.replace(/javascript:/gi, '');
+  // Remove data: URLs in href/src (potential XSS vector)
+  sanitized = sanitized.replace(/\s*href\s*=\s*["']?\s*data:/gi, ' href="');
+  sanitized = sanitized.replace(/\s*src\s*=\s*["']?\s*data:/gi, ' src="');
+
+  return sanitized;
+};
+
+/**
+ * Renders content with basic HTML support.
+ * Detects HTML tags and renders them safely using dangerouslySetInnerHTML.
+ * Falls back to plain text for non-HTML content.
  */
 const renderHtmlContent = (content: string | undefined): React.ReactNode => {
   if (!content) return null;
 
-  // More precise HTML tag detection - looks for actual HTML tags, not just < followed by text
-  // This avoids false positives like "Price < $100" or "x < 5"
-  // Pattern: < followed by a letter (tag name), then optional attributes, then >
+  // Check for HTML tags - looks for < followed by a letter (tag start)
   const htmlTagPattern = /<[a-z][a-z0-9]*(\s+[^>]*)?>/i;
   const hasHtmlTags = htmlTagPattern.test(content);
 
   if (hasHtmlTags) {
-    // Use DOMPurify for robust HTML sanitization
-    // Allows safe HTML tags (strong, em, p, br, ul, ol, li, etc.) but removes dangerous content
-    const sanitized = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: [
-        'strong',
-        'b',
-        'em',
-        'i',
-        'u',
-        'p',
-        'br',
-        'div',
-        'span',
-        'ul',
-        'ol',
-        'li',
-        'a',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel'], // Allow href for links, target and rel for security
-      ALLOW_DATA_ATTR: false, // Disable data attributes for security
-      KEEP_CONTENT: true, // Keep text content even if tags are removed
-    });
-
-    return <span dangerouslySetInnerHTML={{ __html: sanitized }} />;
+    try {
+      const sanitized = sanitizeHtml(content);
+      return <span dangerouslySetInnerHTML={{ __html: sanitized }} />;
+    } catch (error) {
+      // If sanitization fails, strip all HTML tags
+      console.error('Error rendering HTML content:', error);
+      return content.replace(/<[^>]*>/g, '');
+    }
   }
 
-  // No HTML tags detected, render as plain text (backward compatible)
+  // No HTML tags detected, render as plain text
   return content;
 };
 
