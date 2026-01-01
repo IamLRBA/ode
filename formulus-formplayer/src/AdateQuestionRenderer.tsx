@@ -1,19 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { withJsonFormsControlProps } from '@jsonforms/react';
-import {
-  ControlProps,
-  rankWith,
-  schemaTypeIs,
-  and,
-  schemaMatches,
-} from '@jsonforms/core';
-import {
-  TextField,
-  Box,
-  Typography,
-  Alert,
-  Button,
-} from '@mui/material';
+import { ControlProps, rankWith, schemaTypeIs, and, schemaMatches } from '@jsonforms/core';
+import { TextField, Box, Typography, Alert, Button } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import QuestionShell from './QuestionShell';
 import {
@@ -108,7 +96,10 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
   const handleDayChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      if (value === '' || (/^\d+$/.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 31)) {
+      if (
+        value === '' ||
+        (/^\d+$/.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 31)
+      ) {
         setDay(value);
         updateFormData();
       }
@@ -120,7 +111,10 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
   const handleMonthChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      if (value === '' || (/^\d+$/.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 12)) {
+      if (
+        value === '' ||
+        (/^\d+$/.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 12)
+      ) {
         setMonth(value);
         updateFormData();
       }
@@ -132,7 +126,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
   const handleYearChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      if (value === '' || (/^\d{4}$/.test(value))) {
+      if (value === '' || /^\d{4}$/.test(value)) {
         setYear(value);
         updateFormData();
       }
@@ -180,8 +174,10 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 
   const hasError = errors && (Array.isArray(errors) ? errors.length > 0 : errors.length > 0);
   const displayValue = data ? displayAdate(data) : '';
-  const errorMessage = hasError 
-    ? (Array.isArray(errors) ? errors.join(', ') : String(errors))
+  const errorMessage = hasError
+    ? Array.isArray(errors)
+      ? errors.join(', ')
+      : String(errors)
     : undefined;
 
   return (
@@ -189,7 +185,8 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
       title={schema.title || 'Approximate Date'}
       description={schema.description}
       required={schema.required?.includes(path.split('.').pop() || '')}
-      error={errorMessage}>
+      error={errorMessage}
+    >
       <Box sx={{ mb: 2 }}>
         {/* Quick date buttons */}
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -198,14 +195,11 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
             size="small"
             startIcon={<CalendarToday />}
             onClick={handleToday}
-            disabled={!enabled}>
+            disabled={!enabled}
+          >
             Today
           </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={handleYesterday}
-            disabled={!enabled}>
+          <Button variant="outlined" size="small" onClick={handleYesterday} disabled={!enabled}>
             Yesterday
           </Button>
         </Box>
@@ -318,4 +312,3 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 };
 
 export default withJsonFormsControlProps(AdateQuestionRenderer);
-

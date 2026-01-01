@@ -591,6 +591,7 @@ ORDER BY approximate_date ASC
 The adate system uses two formats:
 
 1. **Storage Format** (YYYY-MM-DD): Used in the database and for sorting
+
    - Example: `"2024-06-15"`, `"2024-06-??"`
 
 2. **Adate Format** (D:DD,M:MM,Y:YYYY): Legacy format for compatibility

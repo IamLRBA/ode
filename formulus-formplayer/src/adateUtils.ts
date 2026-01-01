@@ -1,9 +1,9 @@
 /**
  * Utility functions for handling approximate dates (adate)
- * 
+ *
  * Adate format: D:DD,M:MM,Y:YYYY (e.g., "D:15,M:06,Y:2024")
  * Storage format: YYYY-MM-DD with uncertainty markers (e.g., "2024-06-15", "2024-06-??")
- * 
+ *
  * The storage format is year-first to ensure SQL sortability.
  */
 
@@ -12,7 +12,7 @@ const NA = 'NS'; // Value to use for N/A (Not Specified)
 /**
  * Converts adate format (D:DD,M:MM,Y:YYYY) to year-first storage format (YYYY-MM-DD)
  * Handles uncertainty markers (NS) by converting them to ??
- * 
+ *
  * @param adate - Adate string in format "D:DD,M:MM,Y:YYYY" or already in YYYY-MM-DD format
  * @returns Year-first format string (YYYY-MM-DD) with ?? for unknown parts, or null if invalid
  */
@@ -22,15 +22,19 @@ export function adateToStorageFormat(adate: string | null | undefined): string |
   }
 
   // If already in YYYY-MM-DD format, return as-is (may contain ??)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(adate) || /^\d{4}-\?\?-\d{2}$/.test(adate) || 
-      /^\d{4}-\d{2}-\?\?$/.test(adate) || /^\d{4}-\?\?-\?\?$/.test(adate) ||
-      /^\?\?\?\?-\d{2}-\d{2}$/.test(adate)) {
+  if (
+    /^\d{4}-\d{2}-\d{2}$/.test(adate) ||
+    /^\d{4}-\?\?-\d{2}$/.test(adate) ||
+    /^\d{4}-\d{2}-\?\?$/.test(adate) ||
+    /^\d{4}-\?\?-\?\?$/.test(adate) ||
+    /^\?\?\?\?-\d{2}-\d{2}$/.test(adate)
+  ) {
     return adate;
   }
 
   // Parse D:DD,M:MM,Y:YYYY format
   const upperAdate = adate.toUpperCase();
-  
+
   // Extract day, month, year
   const dayMatch = upperAdate.match(/D:(\d+|NS)/);
   const monthMatch = upperAdate.match(/M:(\d+|NS)/);
@@ -56,7 +60,7 @@ export function adateToStorageFormat(adate: string | null | undefined): string |
 
 /**
  * Converts year-first storage format (YYYY-MM-DD) back to adate format (D:DD,M:MM,Y:YYYY)
- * 
+ *
  * @param storageFormat - Year-first format string (YYYY-MM-DD) with ?? for unknown parts
  * @returns Adate string in format "D:DD,M:MM,Y:YYYY" with NS for unknown parts
  */
@@ -73,7 +77,7 @@ export function storageFormatToAdate(storageFormat: string | null | undefined): 
   }
 
   const [year, month, day] = parts;
-  
+
   const dayValue = day === '??' ? NA : parseInt(day, 10).toString();
   const monthValue = month === '??' ? NA : parseInt(month, 10).toString();
   const yearValue = year === '????' ? NA : year;
@@ -123,13 +127,13 @@ export function dayUnknown(adate: string | null | undefined): boolean {
  */
 export function displayAdate(adate: string | null | undefined): string {
   if (!adate) return 'n/a';
-  
+
   // Convert to storage format first if needed
   const storageFormat = adateToStorageFormat(adate);
   if (!storageFormat) return 'n/a';
 
   const [year, month, day] = storageFormat.split('-');
-  
+
   // Format based on what's known
   if (day === '??' && month === '??') {
     return `??/??/${year}`;
@@ -165,4 +169,3 @@ export function yesterdayAdate(): string {
   const year = yesterday.getFullYear();
   return `D:${day},M:${month},Y:${year}`;
 }
-
