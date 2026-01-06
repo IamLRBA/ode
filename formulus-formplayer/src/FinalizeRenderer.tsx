@@ -1,14 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  Typography,
-  Paper,
-  Divider,
-  Link,
-} from '@mui/material';
+import { Box, Button, List, ListItem, Typography, Paper, Divider, Link } from '@mui/material';
 import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
 import { withJsonFormsControlProps, useJsonForms } from '@jsonforms/react';
 import { ControlProps } from '@jsonforms/core';
