@@ -300,19 +300,53 @@ const FinalizeRenderer = ({
           <Typography variant="subtitle1" color="error" gutterBottom>
             Please fix the following errors before finalizing:
           </Typography>
-          <Paper sx={{ mb: 3 }}>
-            <List>
+          <Paper sx={{ mb: 3, p: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                alignItems: 'center',
+              }}
+            >
               {errors.map((error: ErrorObject, index: number) => (
-                <ListItem
+                <Button
                   key={index}
-                  component="div"
-                  sx={{ cursor: 'pointer' }}
+                  variant="outlined"
+                  color="error"
                   onClick={() => handleErrorClick(error.instancePath)}
+                  sx={{
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    textTransform: 'none',
+                    py: 1.5,
+                    px: 2,
+                    width: { xs: '100%', sm: 'auto' },
+                    minWidth: 'auto',
+                    maxWidth: { xs: '100%', sm: 'calc(100% - 16px)', md: 'none' },
+                    borderColor: 'error.main',
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    '&:hover': {
+                      borderColor: 'error.dark',
+                      backgroundColor: 'error.light',
+                    },
+                  }}
                 >
-                  <ListItemText primary={formatErrorMessage(error)} />
-                </ListItem>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textAlign: 'center',
+                      width: '100%',
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {formatErrorMessage(error)}
+                  </Typography>
+                </Button>
               ))}
-            </List>
+            </Box>
           </Paper>
         </>
       ) : (

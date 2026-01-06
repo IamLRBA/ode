@@ -17,10 +17,10 @@ body {
 
 .swipelayout_screen {
   margin: 0;
-  padding-top: 2vh;
+  padding-top: 0.5vh;
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 2vh;
+  padding-bottom: 0.5vh;
   width: 100%;
   /* Remove fixed height and overflow - let FormLayout handle scrolling */
   min-height: 100%;
@@ -30,13 +30,13 @@ body {
 
 /* Add padding to form content, but not to the container itself */
 .swipelayout_screen > div {
-  padding-left: 1%;
-  padding-right: 1%;
+  padding-left: 0.5%;
+  padding-right: 0.5%;
   box-sizing: border-box;
 }
 
 .swipelayout_screen > div > div {
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 }
 
 code {

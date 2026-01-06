@@ -118,7 +118,7 @@ const SwipeLayoutRenderer = ({
             }
           : undefined
       }
-      contentBottomPadding={120}
+      contentBottomPadding={80}
       showNavigation={true}
     >
       <div {...handlers} className="swipelayout_screen">
