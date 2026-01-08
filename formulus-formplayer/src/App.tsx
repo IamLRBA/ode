@@ -39,7 +39,7 @@ import { shellMaterialRenderers } from './material-wrappers';
 import ErrorBoundary from './ErrorBoundary';
 import { draftService } from './DraftService';
 import DraftSelector from './DraftSelector';
-import { loadExtensions, ExtensionMetadata } from './extensionLoader';
+import { loadExtensions } from './extensionLoader';
 
 // Only import development dependencies in development mode
 let webViewMock: any = null;
@@ -215,6 +215,8 @@ function App() {
   const [extensionRenderers, setExtensionRenderers] = useState<JsonFormsRendererRegistryEntry[]>(
     [],
   );
+  // Store extension functions for potential future use (e.g., validation context injection)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [extensionFunctions, setExtensionFunctions] = useState<Map<string, Function>>(new Map());
   const [extensionDefinitions, setExtensionDefinitions] = useState<Record<string, any>>({});
 

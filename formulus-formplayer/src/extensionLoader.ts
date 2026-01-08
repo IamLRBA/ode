@@ -122,14 +122,20 @@ async function loadRenderer(
     const modulePath = basePath ? `${basePath}/${metadata.module}` : metadata.module;
 
     // Dynamic import - handle both file:// URLs and relative paths
+    // Note: Dynamic imports with variables are required for runtime extension loading
+    // Webpack warnings are expected and can be safely ignored
     let module: any;
     try {
       // Try dynamic import (works for file:// URLs in WebView)
-      module = await import(/* @vite-ignore */ modulePath);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Dynamic import path is intentionally variable for runtime loading
+      module = await import(/* @vite-ignore */ /* webpackIgnore: true */ modulePath);
     } catch (importError) {
       // Fallback: try with .js extension
       const modulePathWithExt = modulePath.endsWith('.js') ? modulePath : `${modulePath}.js`;
-      module = await import(/* @vite-ignore */ modulePathWithExt);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Dynamic import path is intentionally variable for runtime loading
+      module = await import(/* @vite-ignore */ /* webpackIgnore: true */ modulePathWithExt);
     }
 
     // Get tester function
@@ -170,12 +176,18 @@ async function loadFunction(
     const modulePath = basePath ? `${basePath}/${metadata.module}` : metadata.module;
 
     // Dynamic import
+    // Note: Dynamic imports with variables are required for runtime extension loading
+    // Webpack warnings are expected and can be safely ignored
     let module: any;
     try {
-      module = await import(/* @vite-ignore */ modulePath);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Dynamic import path is intentionally variable for runtime loading
+      module = await import(/* @vite-ignore */ /* webpackIgnore: true */ modulePath);
     } catch (importError) {
       const modulePathWithExt = modulePath.endsWith('.js') ? modulePath : `${modulePath}.js`;
-      module = await import(/* @vite-ignore */ modulePathWithExt);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Dynamic import path is intentionally variable for runtime loading
+      module = await import(/* @vite-ignore */ /* webpackIgnore: true */ modulePathWithExt);
     }
 
     // Get function
