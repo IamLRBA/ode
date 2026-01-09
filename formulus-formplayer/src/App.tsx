@@ -624,30 +624,6 @@ function App() {
 
     return instance;
   }, [extensionDefinitions]);
-  const ajv = new Ajv({
-    allErrors: true,
-    strict: false, // Allow custom keywords like x-formulus-validation
-  });
-  addErrors(ajv);
-  addFormats(ajv);
-
-  // Add custom format validators
-  ajv.addFormat('photo', () => true); // Accept any value for photo format
-  ajv.addFormat('qrcode', () => true); // Accept any value for qrcode format
-  ajv.addFormat('signature', () => true); // Accept any value for signature format
-  ajv.addFormat('select_file', () => true); // Accept any value for file selection format
-  ajv.addFormat('audio', () => true); // Accept any value for audio format
-  ajv.addFormat('gps', () => true); // Accept any value for GPS format
-  ajv.addFormat('video', () => true); // Accept any value for video format
-  ajv.addFormat('adate', (data: any) => {
-    // Allow null, undefined, or empty string (for optional fields)
-    if (data === null || data === undefined || data === '') {
-      return true;
-    }
-    // Validate YYYY-MM-DD format (may contain ?? for unknown parts)
-    const dateRegex = /^(\d{4}|\?\?\?\?)-(\d{2}|\?\?)-(\d{2}|\?\?)$/;
-    return typeof data === 'string' && dateRegex.test(data);
-  });
 
   // Show draft selector if we have pending form init and available drafts
   if (showDraftSelector && pendingFormInit) {
