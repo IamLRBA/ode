@@ -26,6 +26,7 @@ import AudioQuestionRenderer, { audioQuestionTester } from './AudioQuestionRende
 import GPSQuestionRenderer, { gpsQuestionTester } from './GPSQuestionRenderer';
 import VideoQuestionRenderer, { videoQuestionTester } from './VideoQuestionRenderer';
 import HtmlLabelRenderer, { htmlLabelTester } from './HtmlLabelRenderer';
+import AdateQuestionRenderer, { adateQuestionTester } from './AdateQuestionRenderer';
 import { shellMaterialRenderers } from './material-wrappers';
 
 import ErrorBoundary from './ErrorBoundary';
@@ -174,6 +175,7 @@ export const customRenderers = [
   { tester: gpsQuestionTester, renderer: GPSQuestionRenderer },
   { tester: videoQuestionTester, renderer: VideoQuestionRenderer },
   { tester: htmlLabelTester, renderer: HtmlLabelRenderer },
+  { tester: adateQuestionTester, renderer: AdateQuestionRenderer },
 ];
 
 function App() {
@@ -551,6 +553,15 @@ function App() {
   ajv.addFormat('audio', () => true); // Accept any value for audio format
   ajv.addFormat('gps', () => true); // Accept any value for GPS format
   ajv.addFormat('video', () => true); // Accept any value for video format
+  ajv.addFormat('adate', (data: any) => {
+    // Allow null, undefined, or empty string (for optional fields)
+    if (data === null || data === undefined || data === '') {
+      return true;
+    }
+    // Validate YYYY-MM-DD format (may contain ?? for unknown parts)
+    const dateRegex = /^(\d{4}|\?\?\?\?)-(\d{2}|\?\?)-(\d{2}|\?\?)$/;
+    return typeof data === 'string' && dateRegex.test(data);
+  });
 
   // Show draft selector if we have pending form init and available drafts
   if (showDraftSelector && pendingFormInit) {

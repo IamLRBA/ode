@@ -83,7 +83,22 @@ func (p *postgresDB) GetFormTypeSchema(ctx context.Context, formType string) (*F
 			CASE
 				WHEN type_count > 1 THEN 'text'
 				WHEN types_found = 'number' THEN 'numeric'
-				WHEN types_found = 'string' THEN 'text'
+				WHEN types_found = 'string' THEN 
+					CASE
+						-- Detect adate format: YYYY-MM-DD or YYYY-??-?? pattern (year-first, sortable)
+						WHEN EXISTS (
+							SELECT 1 FROM public.observations o
+							WHERE o.form_type = $1 
+							AND o.deleted = false 
+							AND o.data ? key
+							AND o.data->>key IS NOT NULL
+							AND (o.data->>key ~ '^\d{4}-\d{2}-\d{2}$' OR 
+							     o.data->>key ~ '^\d{4}-\?\?-\d{2}$' OR
+							     o.data->>key ~ '^\d{4}-\d{2}-\?\?$' OR
+							     o.data->>key ~ '^\d{4}-\?\?-\?\?$')
+						) THEN 'adate'  -- Mark as adate type for proper handling
+						ELSE 'text'
+					END
 				WHEN types_found = 'boolean' THEN 'boolean'
 				ELSE 'text'
 			END AS sql_type
@@ -134,6 +149,10 @@ func (p *postgresDB) GetObservationsForFormType(ctx context.Context, formType st
 			selectParts = append(selectParts, fmt.Sprintf("(data ->> '%s')::numeric AS data_%s", col.Key, col.Key))
 		case "boolean":
 			selectParts = append(selectParts, fmt.Sprintf("(data ->> '%s')::boolean AS data_%s", col.Key, col.Key))
+		case "adate":
+			// Adate strings in YYYY-MM-DD format are sortable as text
+			// The year-first format ensures proper chronological ordering
+			selectParts = append(selectParts, fmt.Sprintf("(data ->> '%s')::text AS data_%s", col.Key, col.Key))
 		default:
 			selectParts = append(selectParts, fmt.Sprintf("(data ->> '%s')::text AS data_%s", col.Key, col.Key))
 		}

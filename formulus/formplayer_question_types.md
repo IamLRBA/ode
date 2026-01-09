@@ -524,6 +524,133 @@ The GPS question type stores location data as a JSON string with the following s
 }
 ```
 
+## Approximate Date (adate)
+
+The approximate date question type allows users to enter dates with support for unknown day, month, or year components. Dates are stored in YYYY-MM-DD format (year-first) to ensure they are sortable in SQL queries.
+
+### Schema Definition
+
+```json
+{
+  "approximateDate": {
+    "type": "string",
+    "format": "adate",
+    "title": "Approximate Date",
+    "description": "Enter an approximate date (day, month, or year can be unknown)"
+  }
+}
+```
+
+### UI Schema
+
+```json
+{
+  "type": "Control",
+  "scope": "#/properties/approximateDate"
+}
+```
+
+### Features
+
+- **Year-First Storage**: Stored in YYYY-MM-DD format (ISO 8601 date format, year-first)
+- **SQL Sortability**: Automatically sortable in SQL queries due to year-first format
+- **Uncertainty Support**: Supports uncertainty markers (??) for unknown day, month, or year
+- **Quick Date Buttons**: Today and Yesterday buttons for quick date entry
+- **Individual Controls**: Separate checkboxes to mark day/month/year as unknown
+- **Display Format**: Dates are displayed in DD/MM/YYYY format with ?? for unknown parts
+
+### Data Structure
+
+The adate field stores a string in YYYY-MM-DD format with optional uncertainty markers:
+
+- **Complete date**: `"2024-06-15"` → June 15, 2024
+- **Day unknown**: `"2024-06-??"` → June ??, 2024
+- **Month unknown**: `"2024-??-15"` → ?? 15, 2024
+- **Day & month unknown**: `"2024-??-??"` → ?? ??, 2024
+
+### Display Format
+
+Dates are displayed in DD/MM/YYYY format with ?? for unknown parts:
+
+- `"2024-06-15"` → `"15/06/2024"`
+- `"2024-06-??"` → `"??/06/2024"`
+- `"2024-??-15"` → `"15/??/2024"`
+- `"2024-??-??"` → `"??/??/2024"`
+
+### SQL Sortability
+
+The year-first format ensures that dates sort correctly in SQL queries:
+
+```sql
+ORDER BY approximate_date ASC
+-- Results: "2024-??-??", "2024-06-??", "2024-06-15", "2024-12-31", "2025-01-01"
+```
+
+### Internal Format Conversion
+
+The adate system uses two formats:
+
+1. **Storage Format** (YYYY-MM-DD): Used in the database and for sorting
+
+   - Example: `"2024-06-15"`, `"2024-06-??"`
+
+2. **Adate Format** (D:DD,M:MM,Y:YYYY): Legacy format for compatibility
+   - Example: `"D:15,M:06,Y:2024"`, `"D:NS,M:06,Y:2024"`
+
+The system automatically converts between these formats as needed.
+
+### Usage Examples
+
+#### Basic Adate Field
+
+```json
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "eventDate": {
+        "type": "string",
+        "format": "adate",
+        "title": "Event Date"
+      }
+    }
+  }
+}
+```
+
+#### Adate Field with Description
+
+```json
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "birthDate": {
+        "type": "string",
+        "format": "adate",
+        "title": "Birth Date",
+        "description": "Enter your birth date. You can mark day or month as unknown if you're not sure."
+      }
+    }
+  }
+}
+```
+
+### Implementation Details
+
+The adate question type is implemented using:
+
+1. **AdateQuestionRenderer**: React component for date input with uncertainty options
+2. **adateUtils**: Utility functions for format conversion and date operations
+3. **Backend Recognition**: PostgreSQL data export service recognizes adate format patterns
+4. **Format Validation**: AJV format validator ensures proper YYYY-MM-DD format
+
+### Dependencies
+
+- **React**: Uses Material-UI components for the date input interface
+- **No Native Dependencies**: Unlike other question types, adate doesn't require native device functionality
+- **Backend Support**: Requires PostgreSQL with pattern matching support for format detection
+
 ## Implementation Guide
 
 When adding new question types to the Formplayer, follow this established pattern:
