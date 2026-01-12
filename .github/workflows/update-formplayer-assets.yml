@@ -1,0 +1,74 @@
+name: Update Formplayer Assets
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'formulus-formplayer/**'
+      - '.github/workflows/update-formplayer-assets.yml'
+    paths-ignore:
+      - 'formulus/android/app/src/main/assets/formplayer_dist/**'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-assets:
+    name: Build and Commit Formplayer Assets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            formulus-formplayer/package-lock.json
+            packages/tokens/package-lock.json
+      
+      - name: Install and build @ode/tokens
+        working-directory: packages/tokens
+        run: |
+          npm install
+          npm run build
+      
+      - name: Install formplayer dependencies
+        working-directory: formulus-formplayer
+        run: npm ci
+      
+      - name: Build and bundle formplayer
+        working-directory: formulus-formplayer
+        run: npm run build:rn
+      
+      - name: Check for asset changes
+        id: check-changes
+        run: |
+          git add formulus/android/app/src/main/assets/formplayer_dist
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to formplayer assets"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Formplayer assets have changed"
+          fi
+      
+      - name: Commit and push assets
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add formulus/android/app/src/main/assets/formplayer_dist
+          git commit -m "chore: update formplayer assets from formulus-formplayer [skip ci]"
+          git push
+

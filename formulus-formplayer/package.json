@@ -36,7 +36,7 @@
     "start": "react-scripts start",
     "sync-interface": "node scripts/sync-interface.js",
     "build": "npm run sync-interface && react-scripts build",
-    "upload:android": "npm run build && node scripts/clean-rn-assets.js && node scripts/copy-to-rn.js",
+    "upload:android": "npm run build:rn",
     "build:rn": "npm run build && npm run copy-to-rn",
     "clean-rn-assets": "node scripts/clean-rn-assets.js",
     "copy-to-rn": "node scripts/copy-to-rn.js",

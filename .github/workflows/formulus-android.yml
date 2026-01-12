@@ -9,6 +9,8 @@ on:
       - 'formulus/**'
       - 'formulus-formplayer/**'
       - '.github/workflows/formulus-android.yml'
+    paths-ignore:
+      - 'formulus/android/app/src/main/assets/formplayer_dist/**'
   pull_request:
     paths:
       - 'formulus/**'
