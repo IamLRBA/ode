@@ -84,6 +84,17 @@ func TestValidateBundleStructure(t *testing.T) {
 			wantErr: true,
 			err:     ErrInvalidCellStructure,
 		},
+		{
+			name: "valid bundle with root-level forms/ext.json",
+			files: map[string]string{
+				"app/index.html":                "<html></html>",
+				"forms/user/schema.json":        `{"core_id": "user", "fields": []}`,
+				"forms/user/ui.json":            "{}",
+				"forms/ext.json":                `{"version": "1", "renderers": {}}`,
+				"renderers/button/renderer.jsx": "export default function Button() {}",
+			},
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {

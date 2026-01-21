@@ -47,8 +47,13 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 			hasAppDir = true
 		}
 
-		// Track form directories
+		// Track form directories (exclude ext.json files)
 		if strings.HasPrefix(file.Name, "forms/") && !strings.HasSuffix(file.Name, "/") {
+			// Skip ext.json files - they're not form directories
+			// Skip both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json)
+			if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
+				continue
+			}
 			formParts := strings.Split(file.Name, "/")
 			if len(formParts) >= 2 {
 				formDirs[formParts[1]] = struct{}{}
@@ -67,6 +72,11 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 
 	for _, file := range zipReader.File {
 		if strings.HasPrefix(file.Name, "forms/") {
+			// Skip ext.json files - they're validated separately (if needed)
+			// Skip both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json)
+			if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
+				continue
+			}
 			if err := s.validateFormFile(file); err != nil {
 				return err
 			}

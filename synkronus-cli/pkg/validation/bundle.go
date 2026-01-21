@@ -58,7 +58,8 @@ func ValidateBundle(bundlePath string) error {
 		// Track form directories (exclude ext.json files)
 		if strings.HasPrefix(file.Name, "forms/") && !strings.HasSuffix(file.Name, "/") {
 			// Skip ext.json files - they're not form directories
-			if strings.HasSuffix(file.Name, "/ext.json") {
+			// Skip both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json)
+			if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
 				continue
 			}
 			formParts := strings.Split(file.Name, "/")
@@ -81,7 +82,8 @@ func ValidateBundle(bundlePath string) error {
 		// Validate form structure
 		if strings.HasPrefix(file.Name, "forms/") {
 			// Skip ext.json files - they're validated separately in validateExtensions
-			if strings.HasSuffix(file.Name, "/ext.json") {
+			// Skip both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json)
+			if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
 				continue
 			}
 			if err := validateFormFile(file); err != nil {
@@ -180,7 +182,8 @@ func validateFormRendererReferences(zipReader *zip.Reader) error {
 
 	// Second, collect extension renderers from ext.json files
 	for _, file := range zipReader.File {
-		if strings.HasSuffix(file.Name, "/ext.json") {
+		// Collect both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json) ext.json files
+		if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
 			rc, err := file.Open()
 			if err != nil {
 				continue // Skip if can't open
@@ -413,7 +416,8 @@ func validateExtensions(zipReader *zip.Reader) error {
 
 	// First pass: collect extension files and validate structure
 	for _, file := range zipReader.File {
-		if strings.HasSuffix(file.Name, "/ext.json") {
+		// Collect both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json) ext.json files
+		if file.Name == "forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
 			extensionFiles[file.Name] = file
 
 			// Validate JSON structure
