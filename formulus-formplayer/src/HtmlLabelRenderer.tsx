@@ -1,6 +1,6 @@
 import React from 'react';
 import { RankedTester, rankWith, uiTypeIs, UISchemaElement } from '@jsonforms/core';
-import { withJsonFormsLabelProps } from '@jsonforms/react';
+import { withJsonFormsLabelProps, useJsonForms } from '@jsonforms/react';
 import { Typography, Box } from '@mui/material';
 
 /**
@@ -31,6 +31,47 @@ const hasHtmlTags = (content: string): boolean => {
   return htmlTagPattern.test(content);
 };
 
+/**
+ * Check if content contains handlebars template syntax
+ */
+const hasHandlebarsSyntax = (content: string): boolean => {
+  const handlebarsPattern = /\{\{data\.[\w]+\}\}/;
+  return handlebarsPattern.test(content);
+};
+
+/**
+ * Process handlebars template syntax in label text.
+ * Replaces {{data.fieldName}} with actual values from form data.
+ * Supports field names with alphanumeric characters and underscores.
+ */
+const processHandlebarsTemplate = (text: string, data: any): string => {
+  if (!text || !data) {
+    return text || '';
+  }
+
+  // Match handlebars syntax like {{data.fieldName}}
+  // Supports field names with letters, numbers, and underscores
+  const handlebarsPattern = /\{\{data\.([\w]+)\}\}/g;
+
+  return text.replace(handlebarsPattern, (match, fieldName) => {
+    // Get the value from data object
+    const value = data[fieldName];
+
+    // Handle different value types
+    if (value === null || value === undefined) {
+      return ''; // Return empty string for missing values
+    }
+
+    // Handle empty strings - return empty string
+    if (value === '') {
+      return '';
+    }
+
+    // Convert value to string
+    return String(value);
+  });
+};
+
 interface HtmlLabelProps {
   text?: string;
   visible?: boolean;
@@ -38,22 +79,36 @@ interface HtmlLabelProps {
 }
 
 /**
- * Custom Label renderer that supports HTML content.
+ * Custom Label renderer that supports HTML content and handlebars template syntax.
  * Detects HTML tags in the label text and renders them safely.
+ * Processes handlebars template syntax like {{data.fieldName}} to replace with actual values.
  */
 const HtmlLabelRenderer: React.FC<HtmlLabelProps> = ({ text, visible, uischema }) => {
+  const { core } = useJsonForms();
+  const formData = core?.data || {};
+
   if (visible === false) {
     return null;
+  }
+
+  if (!text) {
+    return null;
+  }
+
+  // Process handlebars template syntax first (before HTML processing)
+  let processedText = text;
+  if (hasHandlebarsSyntax(text)) {
+    processedText = processHandlebarsTemplate(text, formData);
   }
 
   // Check if HTML rendering is enabled via options or if content has HTML tags
   const options = (uischema as any)?.options || {};
   const htmlEnabled = options.html === true || options.format === 'html';
-  const contentHasHtml = hasHtmlTags(text || '');
+  const contentHasHtml = hasHtmlTags(processedText);
   const shouldRenderHtml = htmlEnabled || contentHasHtml;
 
-  if (shouldRenderHtml && text) {
-    const sanitized = sanitizeHtml(text);
+  if (shouldRenderHtml && processedText) {
+    const sanitized = sanitizeHtml(processedText);
     return (
       <Box sx={{ mb: 2 }}>
         <Typography
@@ -88,7 +143,7 @@ const HtmlLabelRenderer: React.FC<HtmlLabelProps> = ({ text, visible, uischema }
   // Plain text rendering
   return (
     <Box sx={{ mb: 2 }}>
-      <Typography variant="body1">{text}</Typography>
+      <Typography variant="body1">{processedText}</Typography>
     </Box>
   );
 };
