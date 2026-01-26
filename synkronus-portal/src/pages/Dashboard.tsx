@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import { Button, Input, Badge } from "@ode/components/react-web";
@@ -31,7 +31,9 @@ import {
   HiPlus,
   HiXMark,
   HiHeart,
-  HiDocumentText
+  HiDocumentText,
+  HiChevronDown,
+  HiCircleStack
 } from 'react-icons/hi2'
 import odeLogo from '../assets/ode_logo.png'
 import dashboardBackground from '../assets/dashboard-background.png'
@@ -125,17 +127,55 @@ export function Dashboard() {
   
   // Form states
   const [createUserForm, setCreateUserForm] = useState({ username: '', password: '', role: 'read-only' })
+  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false)
+  const roleDropdownRef = useRef<HTMLDivElement>(null)
   
   // Clear form when modal opens/closes
   const handleOpenCreateUserModal = () => {
     setCreateUserForm({ username: '', password: '', role: 'read-only' })
+    setRoleDropdownOpen(false)
     setShowCreateUserModal(true)
   }
   
   const handleCloseCreateUserModal = () => {
     setCreateUserForm({ username: '', password: '', role: 'read-only' })
+    setRoleDropdownOpen(false)
     setShowCreateUserModal(false)
   }
+  
+  const handleRoleSelect = (role: string) => {
+    setCreateUserForm({ ...createUserForm, role })
+    setRoleDropdownOpen(false)
+  }
+  
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'read-only':
+        return 'Read Only'
+      case 'read-write':
+        return 'Read Write'
+      case 'admin':
+        return 'Admin'
+      default:
+        return 'Select Role'
+    }
+  }
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target as Node)) {
+        setRoleDropdownOpen(false)
+      }
+    }
+    
+    if (roleDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [roleDropdownOpen])
   const [resetPasswordForm, setResetPasswordForm] = useState({ username: '', newPassword: '' })
   const [changePasswordForm, setChangePasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [userSearchQuery, setUserSearchQuery] = useState('')
@@ -629,8 +669,7 @@ export function Dashboard() {
           </div>
         <div className="user-info">
             <div className="user-details">
-              <span className="welcome-text">Welcome back,</span>
-              <span className="username">{user?.username}</span>
+              <span className="welcome-text">Welcome back:</span>
             </div>
             <Badge variant={user?.role === 'admin' ? 'primary' : 'neutral'}>{user?.role}</Badge>
           <Button variant="neutral" onPress={logout} className="logout-button">
@@ -878,6 +917,7 @@ export function Dashboard() {
                         onPress={handleUploadClick}
                         disabled={loading}
                         loading={loading}
+                        position="right"
                         className="upload-button"
                       >
                         <HiArrowUpTray /> Upload Bundle
@@ -893,7 +933,7 @@ export function Dashboard() {
                       </label>
                     </>
                   )}
-                  <Button variant="neutral" onPress={loadAppBundles} disabled={loading} className="refresh-button">
+                  <Button variant="neutral" onPress={loadAppBundles} disabled={loading} position="left" className="refresh-button">
                     <HiArrowPath /> Refresh
                   </Button>
                 </div>
@@ -942,6 +982,7 @@ export function Dashboard() {
                           <Button
                             variant="primary"
                             onPress={() => setShowSwitchConfirm(bundle.version)}
+                            position="left"
                             className="bundle-action-btn activate-btn"
                             accessibilityLabel="Activate this version"
                           >
@@ -951,6 +992,7 @@ export function Dashboard() {
                         <Button
                           variant="neutral"
                           onPress={() => handleViewChanges(bundle.version)}
+                          position={user?.role === 'admin' && !bundle.isActive ? "right" : "standalone"}
                           className="bundle-action-btn changes-btn"
                           accessibilityLabel="View changes from current version"
                           disabled={bundle.isActive || !activeVersion}
@@ -982,34 +1024,12 @@ export function Dashboard() {
                   <p className="section-subtitle">Manage system users and permissions</p>
                 </div>
                 <div className="section-actions">
-                  <Button variant="primary" onPress={handleOpenCreateUserModal} disabled={loading} className="create-button">
+                  <Button variant="primary" onPress={handleOpenCreateUserModal} disabled={loading} position="right" className="create-button">
                     <HiPlus /> Create User
                   </Button>
-                  <Button variant="neutral" onPress={loadUsers} disabled={loading} className="refresh-button">
+                  <Button variant="neutral" onPress={loadUsers} disabled={loading} position="left" className="refresh-button">
                     <HiArrowPath /> Refresh
                   </Button>
-                </div>
-              </div>
-
-              {/* Search Bar */}
-              <div className="users-search-container">
-                <div className="search-input-wrapper">
-                  <Input
-                    type="text"
-                    placeholder="Search users by username or role..."
-                    value={userSearchQuery}
-                    onChangeText={setUserSearchQuery}
-                    className="search-input"
-                  />
-                  {userSearchQuery && (
-                    <button
-                      onClick={() => setUserSearchQuery('')}
-                      className="search-clear"
-                      title="Clear search"
-                    >
-                      <HiXMark />
-                    </button>
-                  )}
                 </div>
               </div>
 
@@ -1021,6 +1041,41 @@ export function Dashboard() {
                 </div>
               ) : (
                 <div className="users-table-container">
+                  <div className="search-bar">
+                    <div className="search-input-wrapper">
+                      <Input
+                        type="text"
+                        placeholder="Search users by username or role..."
+                        value={userSearchQuery}
+                        onChangeText={setUserSearchQuery}
+                        className="search-input"
+                        style={{ width: '100%', maxWidth: '100%', marginBottom: 0 }}
+                      />
+                      {userSearchQuery && (
+                        <button
+                          type="button"
+                          className="search-clear-icon"
+                          onClick={() => setUserSearchQuery('')}
+                          aria-label="Clear search"
+                        >
+                          <HiXMark />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="search-icon-button"
+                        onClick={() => {
+                          const input = document.querySelector('.users-table-container .search-input input') as HTMLInputElement;
+                          if (input) {
+                            input.focus();
+                          }
+                        }}
+                        aria-label="Search"
+                      >
+                        <HiMagnifyingGlass />
+                      </button>
+                    </div>
+                  </div>
                   <table className="users-table">
                     <thead>
                       <tr>
@@ -1070,6 +1125,7 @@ export function Dashboard() {
                                     setResetPasswordForm({ username: u.username, newPassword: '' })
                                     setShowResetPasswordModal(true)
                                   }}
+                                  position="left"
                                   className="table-action-btn reset-password-btn"
                                   accessibilityLabel="Reset Password"
                                 >
@@ -1078,6 +1134,7 @@ export function Dashboard() {
                                 <Button
                                   variant="neutral"
                                   onPress={() => setShowDeleteConfirm(u.username)}
+                                  position="right"
                                   className="table-action-btn delete-btn"
                                   accessibilityLabel="Delete User"
                                 >
@@ -1097,7 +1154,7 @@ export function Dashboard() {
                       u.role.toLowerCase().includes(query)
                     )
                   }).length === 0 && (
-                    <div className="empty-state">
+                    <div className={userSearchQuery ? "user-search-empty" : "empty-state users-empty-state"}>
                       <div className="empty-icon"><HiUsers /></div>
                       <h3>{userSearchQuery ? 'No users found' : 'No Users Found'}</h3>
                       <p>
@@ -1105,6 +1162,16 @@ export function Dashboard() {
                           ? 'Try adjusting your search query'
                           : 'Create your first user to get started'}
                       </p>
+                      {userSearchQuery && (
+                        <Button
+                          variant="neutral"
+                          onPress={() => setUserSearchQuery('')}
+                          className="clear-search-button"
+                          position="standalone"
+                        >
+                          Clear Search
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1140,7 +1207,7 @@ export function Dashboard() {
                   <h2>Observations</h2>
                   <p className="section-subtitle">View and search all observations</p>
                 </div>
-                <Button variant="neutral" onPress={loadObservations} disabled={loading} className="refresh-button">
+                <Button variant="neutral" onPress={loadObservations} disabled={loading} position="standalone" className="refresh-button">
                   <HiArrowPath /> Refresh
                 </Button>
               </div>
@@ -1153,23 +1220,39 @@ export function Dashboard() {
               ) : (
                 <div className="observations-table-container">
                   <div className="search-bar">
-                    <Input
-                      type="text"
-                      placeholder="Search by Observation ID, Form Type, Form Version, or Version..."
-                      value={observationSearchQuery}
-                      onChangeText={setObservationSearchQuery}
-                      className="search-input"
-                    />
-                    {observationSearchQuery && (
-                      <Button
-                        variant="neutral"
-                        onPress={() => setObservationSearchQuery('')}
-                        className="clear-search-button"
-                        accessibilityLabel="Clear search"
+                    <div className="search-input-wrapper">
+                      <Input
+                        type="text"
+                        placeholder="Search by Observation ID, Form Type, Form Version, or Version..."
+                        value={observationSearchQuery}
+                        onChangeText={setObservationSearchQuery}
+                        className="search-input"
+                        style={{ width: '100%', maxWidth: '100%', marginBottom: 0 }}
+                      />
+                      {observationSearchQuery && (
+                        <button
+                          type="button"
+                          className="search-clear-icon"
+                          onClick={() => setObservationSearchQuery('')}
+                          aria-label="Clear search"
+                        >
+                          <HiXMark />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="search-icon-button"
+                        onClick={() => {
+                          const input = document.querySelector('.observations-table-container .search-input input') as HTMLInputElement;
+                          if (input) {
+                            input.focus();
+                          }
+                        }}
+                        aria-label="Search"
                       >
-                        <HiXMark />
-                      </Button>
-                    )}
+                        <HiMagnifyingGlass />
+                      </button>
+                    </div>
                   </div>
 
                   {observations.filter((obs) => {
@@ -1274,16 +1357,18 @@ export function Dashboard() {
                       <p>
                         No observations match your search query: "<strong>{observationSearchQuery}</strong>"
                       </p>
-                      <button
-                        onClick={() => setObservationSearchQuery('')}
-                        className="clear-search-btn"
+                      <Button
+                        variant="neutral"
+                        onPress={() => setObservationSearchQuery('')}
+                        className="clear-search-button"
+                        position="standalone"
                       >
                         Clear Search
-                      </button>
+                      </Button>
                     </div>
                   )}
                   {observations.length === 0 && !loading && !observationSearchQuery && (
-                    <div className="empty-state">
+                    <div className="empty-state observations-empty-state">
                       <div className="empty-icon"><HiClipboardDocumentList /></div>
                       <p>No observations found</p>
                     </div>
@@ -1312,6 +1397,7 @@ export function Dashboard() {
                     onPress={handleExportData}
                     disabled={loading}
                     loading={loading}
+                    position="right"
                     className="export-button"
                   >
                     <HiArrowDownTray /> Export Data
@@ -1328,7 +1414,7 @@ export function Dashboard() {
                   <h2>System Information</h2>
                   <p className="section-subtitle">Server version and build details</p>
                 </div>
-                <Button variant="neutral" onPress={loadSystemInfo} disabled={loading} className="refresh-button">
+                <Button variant="neutral" onPress={loadSystemInfo} disabled={loading} position="standalone" className="refresh-button">
                   <HiArrowPath /> Refresh
                 </Button>
               </div>
@@ -1439,7 +1525,7 @@ export function Dashboard() {
                       )}
                       {systemInfo?.database?.version && (
                         <div className="info-card">
-                          <div className="info-icon"><HiServer /></div>
+                          <div className="info-icon"><HiCircleStack /></div>
                           <div className="info-content">
                             <h3>Database Version</h3>
                             <p className="system-info-text">{systemInfo.database.version}</p>
@@ -1528,23 +1614,51 @@ export function Dashboard() {
               </div>
               <div className="form-group">
                 <label htmlFor="role">Role</label>
-                <select
-                  id="role"
-                  value={createUserForm.role}
-                  onChange={(e) => setCreateUserForm({ ...createUserForm, role: e.target.value })}
-                  required
-                  disabled={loading}
-                >
-                  <option value="read-only">Read Only</option>
-                  <option value="read-write">Read Write</option>
-                  <option value="admin">Admin</option>
-                </select>
+                <div className="role-dropdown-container" ref={roleDropdownRef}>
+                  <button
+                    type="button"
+                    className={`role-select-button ${roleDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                    disabled={loading}
+                  >
+                    <span>{getRoleDisplayName(createUserForm.role)}</span>
+                    <HiChevronDown className={`chevron-icon ${roleDropdownOpen ? 'open' : ''}`} />
+                  </button>
+                  {roleDropdownOpen && (
+                    <div className="role-dropdown-menu">
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'read-only' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('read-only')}
+                      >
+                        <span className="role-name">Read Only</span>
+                        <span className="role-description">View-only access</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'read-write' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('read-write')}
+                      >
+                        <span className="role-name">Read Write</span>
+                        <span className="role-description">Can create and edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'admin' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('admin')}
+                      >
+                        <span className="role-name">Admin</span>
+                        <span className="role-description">Full system access</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="modal-actions">
-                <Button variant="neutral" onPress={handleCloseCreateUserModal} disabled={loading}>
+                <Button variant="neutral" onPress={handleCloseCreateUserModal} disabled={loading} position="left">
                   Cancel
                 </Button>
-                <Button variant="primary" onPress={() => handleCreateUser({ preventDefault: () => {} } as React.FormEvent)} disabled={loading} loading={loading}>
+                <Button variant="primary" onPress={() => handleCreateUser({ preventDefault: () => {} } as React.FormEvent)} disabled={loading} loading={loading} position="right">
                   Create User
                 </Button>
               </div>

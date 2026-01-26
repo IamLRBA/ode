@@ -76,7 +76,7 @@ const Button: React.FC<WebButtonProps> = ({
     }
   }, [actualVariant]);
 
-  const borderRadius = getColor('border.radius.full');
+  const borderRadius = getColor('border.radius.md');
   const borderWidth = getColor('border.width.thin');
 
   // Size-based spacing
