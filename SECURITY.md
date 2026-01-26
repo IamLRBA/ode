@@ -92,6 +92,75 @@ l0uurTOA9d+hIJbzDg/AIM4=
 **Key ID**: `5DD7CEA7D609F145`  
 **Email**: `security@opendataensemble.org`
 
+### How to Use GPG for Encrypted Email
+
+To send an encrypted security report, follow these steps:
+
+#### Step 1: Install GPG
+
+- **macOS**: `brew install gnupg` or download from [GPG Suite](https://gpgtools.org/)
+- **Linux**: Usually pre-installed, or install with `sudo apt install gnupg` (Debian/Ubuntu) or `sudo yum install gnupg` (RHEL/CentOS)
+- **Windows**: Download from [Gpg4win](https://www.gpg4win.org/)
+
+#### Step 2: Import Our Public Key
+
+1. Save the public key block above to a file (e.g., `ode-public-key.asc`)
+2. Import it into your GPG keyring:
+   ```bash
+   gpg --import ode-public-key.asc
+   ```
+3. Verify the key was imported:
+   ```bash
+   gpg --list-keys security@opendataensemble.org
+   ```
+
+#### Step 3: Encrypt Your Message
+
+**Option A: Encrypt a text file**
+```bash
+# Create your report file
+echo "Your security report details here..." > report.txt
+
+# Encrypt it
+gpg --encrypt --armor --recipient security@opendataensemble.org report.txt
+```
+
+This creates `report.txt.asc` - copy the contents of this file into your email.
+
+**Option B: Encrypt directly from command line**
+```bash
+echo "Your security report details here..." | gpg --encrypt --armor --recipient security@opendataensemble.org > encrypted_report.asc
+```
+
+**Option C: Using your email client**
+
+Many email clients (Thunderbird with Enigmail, Mail.app with GPG Suite, etc.) can encrypt emails automatically once you have the recipient's public key imported.
+
+#### Step 4: Send the Encrypted Message
+
+1. Copy the entire encrypted message block (including `-----BEGIN PGP MESSAGE-----` and `-----END PGP MESSAGE-----`)
+2. Paste it into the body of your email to `security@opendataensemble.org`
+3. Send the email (the subject line can remain unencrypted)
+
+#### Quick Example
+
+```bash
+# 1. Import the key
+gpg --import ode-public-key.asc
+
+# 2. Encrypt your message
+echo "Security vulnerability details..." | gpg --encrypt --armor -r security@opendataensemble.org > message.asc
+
+# 3. Copy the contents of message.asc and paste into your email
+cat message.asc
+```
+
+#### Troubleshooting
+
+- **"No public key" error**: Make sure you imported the key correctly with `gpg --import`
+- **"Key not found" error**: Try using the email address: `gpg --encrypt --armor -r security@opendataensemble.org`
+- **Need help?**: If you're having trouble with GPG, you can send an unencrypted email, but we strongly recommend using encryption for sensitive security reports.
+
 ### What to Include
 
 When reporting a vulnerability, please include:
