@@ -37,10 +37,13 @@ import {
   HiChevronDown,
   HiCircleStack
 } from 'react-icons/hi2'
+import { ColorBrandPrimary500 } from '@ode/tokens/dist/js/tokens'
 import odeLogo from '../assets/ode_logo.png'
 import dashboardBackgroundDark from '../assets/dashboard-background.png'
 import dashboardBackgroundLight from '../assets/dashboard-background-light.png'
 import './Dashboard.css'
+
+const BRAND_PRIMARY = ColorBrandPrimary500
 
 type TabType = 'overview' | 'app-bundles' | 'users' | 'observations' | 'data-export' | 'system'
 
@@ -777,9 +780,9 @@ export function Dashboard() {
             <svg className="border-fade" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="border-fade-left-0" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                  <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                  <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                  <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                 </linearGradient>
               </defs>
               <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-left-0)" />
@@ -796,9 +799,9 @@ export function Dashboard() {
             <svg className="border-fade" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="border-fade-right-0" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                  <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                 </linearGradient>
               </defs>
               <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-right-0)" />
@@ -816,9 +819,9 @@ export function Dashboard() {
               <svg className="border-fade" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="border-fade-left-1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                    <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                    <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                    <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                    <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                   </linearGradient>
                 </defs>
                 <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-left-1)" />
@@ -838,15 +841,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-obs-${user?.role === 'admin' ? 'right' : 'left'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   )}
                 </linearGradient>
@@ -867,15 +870,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-export-${user?.role === 'admin' ? 'left' : 'right'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   )}
                 </linearGradient>
@@ -896,15 +899,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-system-${user?.role === 'admin' ? 'right' : 'left'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   )}
                 </linearGradient>

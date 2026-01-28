@@ -1,0 +1,28 @@
+{
+  "color": {
+    "semantic": {
+      "ui": {
+        "scrollbar": {
+          "track": { "value": "rgba(79, 127, 78, 0.1)" },
+          "thumb": { "value": "rgba(79, 127, 78, 0.3)" },
+          "thumb-hover": { "value": "rgba(79, 127, 78, 0.5)" }
+        },
+        "overlay": {
+          "dark": { "value": "rgba(33, 33, 33, 0.5)" },
+          "light": { "value": "rgba(250, 250, 250, 0.15)" }
+        },
+        "input": {
+          "fill-dark": { "value": "rgba(21, 21, 21, 0.85)" }
+        },
+        "surface": {
+          "dropdown-dark": { "value": "rgba(33, 33, 33, 0.95)" },
+          "dropdown-light": { "value": "rgba(255, 255, 255, 0.95)" },
+          "modal-dark": { "value": "rgba(33, 33, 33, 0.98)" }
+        },
+        "focus": {
+          "ring-glow": { "value": "rgba(79, 127, 78, 0.2)" }
+        }
+      }
+    }
+  }
+}
