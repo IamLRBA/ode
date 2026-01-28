@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { api } from '../services/api'
 import { Button, Input, Badge } from "@ode/components/react-web";
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
 
 import { 
   HiOutlineChartBar, HiChartBar,
@@ -36,7 +38,8 @@ import {
   HiCircleStack
 } from 'react-icons/hi2'
 import odeLogo from '../assets/ode_logo.png'
-import dashboardBackground from '../assets/dashboard-background.png'
+import dashboardBackgroundDark from '../assets/dashboard-background.png'
+import dashboardBackgroundLight from '../assets/dashboard-background-light.png'
 import './Dashboard.css'
 
 type TabType = 'overview' | 'app-bundles' | 'users' | 'observations' | 'data-export' | 'system'
@@ -108,6 +111,7 @@ interface HealthStatus {
 
 export function Dashboard() {
   const { user, logout } = useAuth()
+  const { resolvedTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<TabType>('overview')
   const [appBundles, setAppBundles] = useState<AppBundleVersion[]>([])
   const [users, setUsers] = useState<User[]>([])
@@ -129,6 +133,9 @@ export function Dashboard() {
   const [createUserForm, setCreateUserForm] = useState({ username: '', password: '', role: 'read-only' })
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false)
   const roleDropdownRef = useRef<HTMLDivElement>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
   
   // Clear form when modal opens/closes
   const handleOpenCreateUserModal = () => {
@@ -167,15 +174,30 @@ export function Dashboard() {
       if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target as Node)) {
         setRoleDropdownOpen(false)
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false)
+      }
     }
     
-    if (roleDropdownOpen) {
+    if (roleDropdownOpen || mobileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [roleDropdownOpen])
+  }, [roleDropdownOpen, mobileMenuOpen])
+
+  // Handle scroll to make navbar more opaque
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+      setIsScrolled(scrollY > 10) // Trigger when scrolled more than 10px
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const [resetPasswordForm, setResetPasswordForm] = useState({ username: '', newPassword: '' })
   const [changePasswordForm, setChangePasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [userSearchQuery, setUserSearchQuery] = useState('')
@@ -657,11 +679,13 @@ export function Dashboard() {
     setShowChangePasswordModal(true)
   }
 
+  const dashboardBackground = resolvedTheme === 'light' ? dashboardBackgroundLight : dashboardBackgroundDark
+
   return (
     <div className="dashboard" style={{ '--dashboard-bg-image': `url(${dashboardBackground})` } as React.CSSProperties}>
       <div className="gold-circle-1"></div>
       <div className="gold-circle-2"></div>
-      <header className="dashboard-header">
+      <header className={`dashboard-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content">
           <div className="logo-section">
             <img src={odeLogo} alt="ODE Logo" className="logo-icon" />
@@ -672,12 +696,77 @@ export function Dashboard() {
               <span className="welcome-text">Welcome back:</span>
             </div>
             <Badge variant={user?.role === 'admin' ? 'primary' : 'neutral'}>{user?.role}</Badge>
+          <ThemeSwitcher />
           <Button variant="neutral" onPress={logout} className="logout-button">
               Logout
           </Button>
+          <button 
+            className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              // When menu is open (X is active), only close it (don't toggle)
+              if (mobileMenuOpen) {
+                setMobileMenuOpen(false);
+                return; // Exit early to prevent any further execution
+              }
+              // When menu is closed (3 lines), open it
+              setMobileMenuOpen(true);
+            }}
+            onMouseDown={(e) => {
+              // Prevent backdrop click from firing when clicking the button
+              e.stopPropagation();
+            }}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+          </button>
           </div>
         </div>
       </header>
+      
+      {/* Mobile Menu Backdrop */}
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-menu-backdrop" 
+          onClick={(e) => {
+            // Only close if clicking directly on backdrop (not through navbar)
+            const target = e.target as HTMLElement;
+            if (target.classList.contains('mobile-menu-backdrop')) {
+              setMobileMenuOpen(false);
+            }
+          }}
+        />
+      )}
+      
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`} ref={mobileMenuRef}>
+        <div className="mobile-menu-content">
+          <div className="mobile-menu-header">
+            <div className="mobile-menu-user-info">
+              <span className="mobile-menu-welcome-text">Welcome back:</span>
+              <Badge variant={user?.role === 'admin' ? 'primary' : 'neutral'}>{user?.role}</Badge>
+            </div>
+          </div>
+          <div className="mobile-menu-actions">
+            <div className="mobile-menu-action-item">
+              <span className="mobile-menu-action-label">Theme</span>
+              <div className="mobile-menu-theme-switcher">
+                <ThemeSwitcher />
+              </div>
+            </div>
+            <div className="mobile-menu-action-item mobile-menu-logout-item">
+              <span className="mobile-menu-action-label">Account</span>
+              <button onClick={logout} className="mobile-menu-logout-button">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <main className="dashboard-content">
         <nav className="dashboard-tabs">

@@ -20,6 +20,25 @@
         "50": { "value": "#EFF6FF" },
         "500": { "value": "#2196F3" },
         "600": { "value": "#2563EB" }
+      },
+      "theme": {
+        "background": {
+          "base": { "value": "#212121" },
+          "elevated": { "value": "#2A2A2A" },
+          "overlay": { "value": "#1A1A1A" },
+          "card": { "value": "rgba(255, 255, 255, 0.05)" }
+        },
+        "text": {
+          "primary": { "value": "rgba(255, 255, 255, 0.9)" },
+          "secondary": { "value": "rgba(255, 255, 255, 0.6)" },
+          "tertiary": { "value": "rgba(255, 255, 255, 0.4)" },
+          "disabled": { "value": "rgba(255, 255, 255, 0.3)" }
+        },
+        "border": {
+          "default": { "value": "rgba(255, 255, 255, 0.1)" },
+          "hover": { "value": "rgba(255, 255, 255, 0.2)" },
+          "focus": { "value": "#4F7F4E" }
+        }
       }
     }
   }

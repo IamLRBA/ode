@@ -9,7 +9,9 @@
 
 * {
   box-sizing: border-box;
-}`n`n/* Exclude monospace elements */
+}
+
+/* Exclude monospace elements */
 .dashboard code,
 .dashboard pre,
 .dashboard kbd,
@@ -26,9 +28,9 @@
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  color: #ffffff;
-  /* Base dark background color */
-  background-color: #212121;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-base);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Main Page Scrollbar - Sleek and Modern */
@@ -87,9 +89,13 @@ html::-webkit-scrollbar-thumb:hover {
   animation: backgroundPulse 25s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
-  /* Add dark overlay to fade the background image */
+  /* Add overlay to fade the background image */
   background-color: rgba(33, 33, 33, 0.5);
   background-blend-mode: overlay;
+}
+
+[data-theme="light"] .dashboard::before {
+  background-color: rgba(250, 250, 250, 0.15); /* Reduced overlay opacity to make background more visible */
 }
 
 /* Background image layer - blurred and faded, under the dark background */
@@ -107,10 +113,16 @@ html::-webkit-scrollbar-thumb:hover {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  filter: blur(10px) brightness(0.2) saturate(0.8);
+  filter: blur(4px) brightness(0.2) saturate(0);
   opacity: 0.7;
   z-index: 0;
   pointer-events: none;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+[data-theme="light"] .dashboard::after {
+  filter: blur(4px) brightness(1) saturate(1.0); /* Reduced blur, adjusted brightness, increased saturation for better visibility */
+  opacity: 0.7; /* Increased opacity to make background more visible */
 }
 
 /* Gold circle 1 - moved to separate div */
@@ -177,16 +189,34 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* Header - Minimal Futuristic Design */
 .dashboard-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 1000;
-  background: rgba(33, 33, 33, 0.85);
+  left: 0;
+  right: 0;
+  z-index: 10001; /* Above backdrop (9999) and mobile menu (10000) */
+  background: var(--color-background-elevated);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-bottom: 1px solid rgba(79, 127, 78, 0.15);
+  border-bottom: 1px solid var(--color-border-default);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   padding: 0;
   transition: all 0.3s ease;
+  opacity: 1; /* Fully opaque to prevent content showing through */
+  width: 100%;
+  will-change: transform;
+}
+
+[data-theme="light"] .dashboard-header {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+/* More opaque when scrolled in light mode */
+[data-theme="light"] .dashboard-header.scrolled {
+  opacity: 1;
+  background: var(--color-background-elevated);
+  backdrop-filter: blur(50px) saturate(200%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .header-content {
@@ -226,10 +256,735 @@ html::-webkit-scrollbar-thumb:hover {
   line-height: var(--font-line-height-tight, 1.2);
 }
 
+/* Use darker green shade for "Synkronus Portal" text in light mode */
+[data-theme="light"] .dashboard-header h1 {
+  color: var(--color-brand-primary-600, #3d653c) !important; /* Darker green for light mode */
+}
+
 .user-info {
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+/* Mobile Menu Toggle Button - Animated Hamburger to X */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: var(--spacing-2, 8px);
+  background: transparent !important; /* No background like themes button */
+  border: none !important; /* No solid border */
+  border-radius: var(--border-radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: visible;
+  gap: 5px;
+}
+
+/* Faded border effect - right to left (same as themes button) */
+.mobile-menu-toggle::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.05) 15%,
+    rgba(79, 127, 78, 0.1) 30%,
+    rgba(79, 127, 78, 0.15) 45%,
+    rgba(79, 127, 78, 0.2) 60%,
+    rgba(79, 127, 78, 0.25) 75%,
+    rgba(79, 127, 78, 0.3) 90%,
+    rgba(79, 127, 78, 0.3) 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+  border-width: 1px;
+}
+
+.hamburger-line {
+  width: 22px;
+  height: 2px;
+  background: var(--color-brand-primary-500, #4f7f4e);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform-origin: center;
+  position: relative;
+}
+
+.mobile-menu-toggle:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Keep current hover */
+  border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+  transform: scale(1.05);
+}
+
+.mobile-menu-toggle:hover::after {
+  display: none; /* Hide faded border on hover */
+}
+
+.mobile-menu-toggle:hover .hamburger-line {
+  background: var(--color-neutral-white, #ffffff) !important; /* White lines on hover */
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Animate hamburger to X when active */
+.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+[data-theme="light"] .mobile-menu-toggle {
+  background: transparent !important;
+  border: none !important;
+}
+
+[data-theme="light"] .mobile-menu-toggle::after {
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.03) 15%,
+    rgba(79, 127, 78, 0.06) 30%,
+    rgba(79, 127, 78, 0.1) 45%,
+    rgba(79, 127, 78, 0.13) 60%,
+    rgba(79, 127, 78, 0.16) 75%,
+    rgba(79, 127, 78, 0.18) 90%,
+    rgba(79, 127, 78, 0.2) 100%
+  );
+}
+
+[data-theme="light"] .mobile-menu-toggle:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important;
+  border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+}
+
+[data-theme="light"] .mobile-menu-toggle:hover::after {
+  display: none;
+}
+
+[data-theme="light"] .mobile-menu-toggle:hover .hamburger-line {
+  background: var(--color-neutral-white, #ffffff) !important;
+}
+
+/* Mobile Menu Backdrop */
+.mobile-menu-backdrop {
+  position: fixed;
+  top: 0; /* Cover everything including navbar area */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+  /* Ensure navbar stays visible and clickable above backdrop */
+  pointer-events: none;
+}
+
+/* Allow clicks through backdrop except on content area */
+.mobile-menu-backdrop::after {
+  content: '';
+  position: absolute;
+  top: 80px; /* Start content blur below navbar */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile Menu - Professional Design */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 80px;
+  right: 0;
+  width: 50%;
+  background: var(--color-background-elevated);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: none;
+  border-radius: 0 0 0 16px; /* Straight top-left, more curved bottom-left */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, var(--opacity-40, 0.4));
+  z-index: 10000;
+  max-height: 0;
+  overflow: visible;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Faded border effect - left to right (same as logout button) */
+.mobile-menu::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 0 0 0 16px; /* Straight top-left, more curved bottom-left */
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.3) 10%,
+    rgba(255, 255, 255, 0.25) 25%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0.05) 85%,
+    transparent 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mobile-menu.open {
+  max-height: 500px;
+  opacity: 1;
+  transform: translateX(0);
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Expand mobile menu when themes dropdown is open */
+.mobile-menu.open:has(.theme-switcher-button.open) {
+  max-height: 700px;
+  overflow: visible;
+}
+
+.mobile-menu-content {
+  padding: var(--spacing-6, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  animation: slideDownFade 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: fit-content;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mobile-menu-header {
+  padding-bottom: var(--spacing-4, 16px);
+  border-bottom: 1px solid var(--color-border-default);
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3, 12px);
+}
+
+.mobile-menu-welcome-text {
+  font-size: var(--font-size-xs, 11px);
+  color: rgba(255, 255, 255, var(--opacity-50, 0.5));
+  text-transform: uppercase;
+  letter-spacing: var(--font-letter-spacing-wider, 1.5px);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+[data-theme="light"] .mobile-menu-welcome-text {
+  color: var(--color-text-secondary);
+}
+
+.mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 16px);
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.mobile-menu-action-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.mobile-menu-action-label {
+  font-size: var(--font-size-xs, 11px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--font-letter-spacing-wider, 1.2px);
+}
+
+.mobile-menu-theme-switcher {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Theme button in mobile menu - styled like logout button but with opposite fade and no background */
+.mobile-menu .theme-switcher-button {
+  padding: 10px 20px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: var(--color-brand-primary-500, #4f7f4e) !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.25s ease !important;
+  backdrop-filter: blur(10px) !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: 100% !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--spacing-2, 8px) !important;
+}
+
+/* Animated gradient overlay on hover - removed per user request */
+.mobile-menu .theme-switcher-button::before {
+  display: none;
+}
+
+/* Faded border for mobile menu theme button - opposite direction (right to left) */
+.mobile-menu .theme-switcher-button::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.05) 15%,
+    rgba(79, 127, 78, 0.1) 30%,
+    rgba(79, 127, 78, 0.15) 45%,
+    rgba(79, 127, 78, 0.2) 60%,
+    rgba(79, 127, 78, 0.25) 75%,
+    rgba(79, 127, 78, 0.3) 90%,
+    rgba(79, 127, 78, 0.3) 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+  border-width: 1px;
+}
+
+
+.mobile-menu .theme-switcher-button:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important;
+  border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+  transform: translateY(-1px);
+}
+
+.mobile-menu .theme-switcher-button:hover::after {
+  opacity: 0;
+}
+
+/* Keep border visible when dropdown is open in mobile menu */
+.mobile-menu .theme-switcher-button.open::after {
+  opacity: 1 !important;
+}
+
+.mobile-menu .theme-switcher-button:hover .theme-switcher-icon {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-brand-primary-600, #3d653c) !important;
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button::after {
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.03) 15%,
+    rgba(79, 127, 78, 0.06) 30%,
+    rgba(79, 127, 78, 0.1) 45%,
+    rgba(79, 127, 78, 0.13) 60%,
+    rgba(79, 127, 78, 0.16) 75%,
+    rgba(79, 127, 78, 0.18) 90%,
+    rgba(79, 127, 78, 0.2) 100%
+  );
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important;
+  border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button:hover::after {
+  opacity: 0;
+}
+
+/* Keep border visible when dropdown is open in mobile menu (light theme) */
+[data-theme="light"] .mobile-menu .theme-switcher-button.open::after {
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button:hover .theme-switcher-icon {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+.mobile-menu-logout-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.mobile-menu-logout-button {
+  padding: 10px 20px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.25s ease !important;
+  backdrop-filter: blur(10px) !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: 100% !important;
+  min-height: auto !important;
+  justify-content: center !important;
+}
+
+/* Faded border effect - left to right (same as desktop) */
+.mobile-menu-logout-button::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.3) 10%,
+    rgba(255, 255, 255, 0.25) 25%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0.05) 85%,
+    transparent 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+  border-width: 1px;
+}
+
+/* Animated gradient overlay on hover - same as desktop */
+/* Animated gradient overlay on hover - removed per user request */
+.mobile-menu-logout-button::before {
+  display: none;
+}
+
+.mobile-menu-logout-button:hover {
+  background: rgba(244, 67, 54, var(--opacity-30, 0.3)) !important;
+  border: 1px solid var(--color-semantic-error-500, #f44336) !important;
+  color: var(--color-semantic-error-500, #f44336) !important;
+  transform: translateY(-1px);
+}
+
+.mobile-menu-logout-button:hover::after {
+  opacity: 0;
+}
+
+[data-theme="light"] .mobile-menu-logout-button {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(33, 33, 33, 0.6) !important;
+}
+
+[data-theme="light"] .mobile-menu-logout-button::after {
+  background: linear-gradient(90deg, 
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.18) 25%,
+    rgba(0, 0, 0, 0.15) 45%,
+    rgba(0, 0, 0, 0.12) 60%,
+    rgba(0, 0, 0, 0.08) 75%,
+    rgba(0, 0, 0, 0.04) 85%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .mobile-menu-logout-button:hover {
+  background: rgba(244, 67, 54, var(--opacity-15, 0.15)) !important;
+  border: 1px solid var(--color-semantic-error-500, #F44336) !important;
+}
+
+[data-theme="light"] .mobile-menu-logout-button:hover::after {
+  opacity: 0;
+}
+
+/* Theme dropdown within mobile menu */
+.mobile-menu .theme-switcher-container {
+  width: 100%;
+  position: relative;
+}
+
+.mobile-menu .theme-switcher-dropdown {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin-top: var(--spacing-2, 8px);
+  min-width: auto;
+  z-index: 1000;
+  animation: slideDownFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .mobile-menu {
+  background: var(--color-background-elevated);
+  border: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, var(--opacity-10, 0.1));
+}
+
+[data-theme="light"] .mobile-menu::after {
+  border-radius: 0 0 0 16px; /* Straight top-left, more curved bottom-left */
+  background: linear-gradient(90deg, 
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.2) 10%,
+    rgba(0, 0, 0, 0.18) 25%,
+    rgba(0, 0, 0, 0.15) 45%,
+    rgba(0, 0, 0, 0.12) 60%,
+    rgba(0, 0, 0, 0.08) 75%,
+    rgba(0, 0, 0, 0.04) 85%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .mobile-menu-action-item {
+  background: transparent;
+  border: none;
+}
+
+[data-theme="light"] .mobile-menu-action-item:hover {
+  background: transparent;
+  border: none;
+}
+
+/* Responsive: Show mobile menu on smaller screens */
+@media (max-width: 1024px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  
+  .mobile-menu {
+    display: block;
+  }
+  
+  .dashboard-tabs {
+    display: none;
+  }
+  
+  .user-info {
+    gap: 12px;
+  }
+  
+  /* Hide welcome text, badge, theme switcher, and logout button on small screens */
+  .welcome-text,
+  .user-details,
+  .user-info .theme-switcher-container,
+  .user-info .logout-button,
+  .user-info .ode-badge {
+    display: none !important;
+  }
+  
+  .user-info {
+    gap: 0;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 8px 20px; /* Padding to make navbar ~60px total (button 44px + 8px top + 8px bottom = 60px) */
+    min-height: 60px; /* Ensure minimum height - button is 44px, so 60px is about 1/3 thicker */
+    display: flex;
+    align-items: center; /* Vertically center content */
+    justify-content: center; /* Center content horizontally */
+    position: relative; /* For absolute positioning of logo and button */
+  }
+  
+  .logo-section {
+    margin-left: 12px; /* Push logo away from left edge (same distance as hamburger from right) */
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Center the h1 text in the navbar */
+  .logo-section h1 {
+    font-size: var(--font-size-xl, 20px);
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    text-align: center;
+    margin: 0;
+    z-index: 1;
+  }
+  
+  /* Keep logo icon visible but position it on the left */
+  .logo-section .logo-icon {
+    display: block;
+  }
+  
+  .user-info {
+    gap: 8px;
+    position: absolute;
+    right: 0;
+  }
+  
+  /* Push hamburger button away from right edge */
+  .mobile-menu-toggle {
+    margin-right: 12px;
+  }
+  
+  /* Adjust mobile menu position - lower it with space so top border is visible */
+  .mobile-menu {
+    top: 70px !important; /* Lower than navbar height (60px) with 8px gap to show top border */
+  }
+  
+  /* Adjust backdrop position */
+  .mobile-menu-backdrop::after {
+    top: 60px; /* Match the new navbar height */
+  }
+}
+
+/* Also increase navbar thickness on medium screens */
+@media (max-width: 1024px) {
+  .dashboard-content {
+    padding-top: calc(60px + var(--spacing-8, 32px)) !important; /* Mobile navbar height (60px) + spacing matching gap between tabs and content */
+  }
+  
+  .header-content {
+    padding: 8px 24px; /* Padding to make navbar ~60px total (button 44px + 8px top + 8px bottom = 60px) */
+    min-height: 60px; /* Ensure minimum height */
+    display: flex;
+    align-items: center; /* Vertically center content */
+    justify-content: center; /* Center content horizontally */
+    position: relative; /* For absolute positioning of logo and button */
+  }
+  
+  .logo-section {
+    margin-left: 12px; /* Push logo away from left edge (same distance as hamburger from right) */
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Center the h1 text in the navbar */
+  .logo-section h1 {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    text-align: center;
+    margin: 0;
+    z-index: 1;
+    font-size: var(--font-size-xl, 20px);
+  }
+  
+  /* Keep logo icon visible but position it on the left */
+  .logo-section .logo-icon {
+    display: block;
+  }
+  
+  .user-info {
+    position: absolute;
+    right: 0;
+  }
+  
+  /* Push hamburger button away from right edge */
+  .mobile-menu-toggle {
+    margin-right: 12px;
+  }
+  
+  /* Adjust mobile menu position - lower it with space so top border is visible */
+  .mobile-menu {
+    top: 68px !important; /* Lower than navbar height (60px) with 8px gap to show top border */
+  }
+  
+  /* Adjust backdrop position */
+  .mobile-menu-backdrop::after {
+    top: 60px; /* Match the new navbar height */
+  }
 }
 
 .user-details {
@@ -251,8 +1006,9 @@ html::-webkit-scrollbar-thumb:hover {
 .username {
   font-size: var(--font-size-base, 16px);
   font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-neutral-white, #ffffff);
+  color: var(--color-text-primary);
   letter-spacing: var(--font-letter-spacing-tight, -0.2px);
+  transition: color 0.3s ease;
 }
 
 .role-badge {
@@ -287,17 +1043,47 @@ html::-webkit-scrollbar-thumb:hover {
 
 .logout-button {
   padding: 10px 20px;
-  background: rgba(244, 67, 54, 0.1);
-  border: 1px solid rgba(244, 67, 54, 0.3);
+  background: transparent;
+  border: none;
   border-radius: 8px;
-  color: #f44336;
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   transition: all 0.25s ease;
   backdrop-filter: blur(10px);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+}
+
+/* Faded border effect - left to right */
+.logout-button::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.3) 10%,
+    rgba(255, 255, 255, 0.25) 25%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0.05) 85%,
+    transparent 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+  border-width: 1px;
 }
 
 .logout-button::before {
@@ -317,9 +1103,13 @@ html::-webkit-scrollbar-thumb:hover {
 
 .logout-button:hover {
   background: rgba(244, 67, 54, var(--opacity-30, 0.3)) !important;
-  border-color: var(--color-semantic-error-500, #f44336) !important;
+  border: 1px solid var(--color-semantic-error-500, #f44336) !important;
   color: var(--color-semantic-error-500, #f44336) !important;
   transform: translateY(-1px);
+}
+
+.logout-button:hover::after {
+  opacity: 0;
 }
 
 /* Content */
@@ -327,6 +1117,7 @@ html::-webkit-scrollbar-thumb:hover {
   max-width: 1600px;
   margin: 0 auto;
   padding: var(--spacing-10);
+  padding-top: calc(80px + var(--spacing-8, 32px)); /* Navbar height + spacing matching gap between tabs and content */
   position: relative;
   z-index: 1;
 }
@@ -335,8 +1126,8 @@ html::-webkit-scrollbar-thumb:hover {
 .dashboard-tabs {
   display: flex;
   gap: var(--spacing-2, 8px);
-  margin-top: var(--spacing-8, 32px);
-  margin-bottom: var(--spacing-8, 32px);
+  margin-top: 0; /* Spacing handled by dashboard-content padding-top */
+  margin-bottom: var(--spacing-8, 32px); /* Match spacing between navbar and tabs */
   background: rgba(255, 255, 255, var(--opacity-5, 0.05));
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
@@ -365,7 +1156,7 @@ html::-webkit-scrollbar-thumb:hover {
   padding: var(--spacing-3, 12px) var(--spacing-5, 20px);
   background: transparent;
   border: none;
-  border-radius: var(--border-radius-md, 8px);
+  border-radius: var(--border-radius-xl, 16px); /* Match container border-radius */
   cursor: pointer;
   font-size: var(--font-size-sm, 14px);
   font-weight: var(--font-weight-semibold, 600);
@@ -376,9 +1167,14 @@ html::-webkit-scrollbar-thumb:hover {
   justify-content: center;
   gap: var(--spacing-2, 8px);
   position: relative;
-  overflow: visible;
+  overflow: hidden; /* Change to hidden for smoother border radius */
   letter-spacing: var(--font-letter-spacing-tight, -0.2px);
   min-height: var(--touch-target-comfortable, 48px);
+  /* Smooth border radius */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .dashboard-tabs button.tab-button svg.border-fade {
@@ -396,7 +1192,7 @@ html::-webkit-scrollbar-thumb:hover {
 .dashboard-tabs button.tab-button svg.border-fade rect {
   fill: none;
   stroke-width: 1;
-  rx: var(--border-radius-md, 8px);
+  rx: var(--border-radius-xl, 16px); /* Match container border-radius */
 }
 
 .dashboard-tabs button.tab-button .tab-icon,
@@ -408,7 +1204,11 @@ html::-webkit-scrollbar-thumb:hover {
 .dashboard-tabs button.tab-button:hover {
   color: var(--color-neutral-white, #ffffff);
   background: var(--color-brand-primary-500, #4f7f4e);
-  transform: translateY(-1px);
+  /* Removed transform: translateY(-1px) - buttons stay in position */
+}
+
+.dashboard-tabs button.tab-button:hover .tab-icon {
+  color: var(--color-neutral-white, #ffffff); /* White icon on hover */
 }
 
 .dashboard-tabs button.tab-button:hover svg.border-fade {
@@ -418,8 +1218,12 @@ html::-webkit-scrollbar-thumb:hover {
 .dashboard-tabs button.tab-button.active {
   color: var(--color-neutral-white, #ffffff);
   background: var(--color-brand-primary-500, #4f7f4e);
-  transform: translateY(-1px);
+  /* Removed transform: translateY(-1px) - buttons stay in position */
   font-weight: var(--font-weight-bold, 700);
+}
+
+.dashboard-tabs button.tab-button.active .tab-icon {
+  color: var(--color-neutral-white, #ffffff); /* White icon when active */
 }
 
 .dashboard-tabs button.tab-button.active svg.border-fade {
@@ -430,6 +1234,7 @@ html::-webkit-scrollbar-thumb:hover {
   font-size: var(--font-size-lg, 18px);
   transition: all var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
   display: flex;
+  color: var(--color-brand-primary-500, #4f7f4e); /* Green icon by default */
   align-items: center;
   justify-content: center;
 }
@@ -520,6 +1325,7 @@ html::-webkit-scrollbar-thumb:hover {
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   padding: var(--spacing-10, 40px);
+  padding-bottom: calc(var(--spacing-10, 40px) + var(--spacing-8, 32px)); /* Extra bottom spacing */
   border-radius: var(--border-radius-xl, 20px);
   border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-20, 0.2));
   box-shadow: 
@@ -535,6 +1341,7 @@ html::-webkit-scrollbar-thumb:hover {
   max-width: 1000px;
   width: 100%;
   margin: 0 auto;
+  margin-bottom: var(--spacing-8, 32px); /* Additional margin from bottom edge */
 }
 
 .section-title {
@@ -563,14 +1370,14 @@ html::-webkit-scrollbar-thumb:hover {
 .section-title h2::after {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -16px; /* Lowered from -8px to -16px */
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 120px; /* Made longer from 60px to 120px */
   height: 3px;
   background: var(--color-brand-primary-500, #4f7f4e);
   border-radius: var(--border-radius-sm, 4px);
-  box-shadow: 0 0 8px rgba(79, 127, 78, var(--opacity-50, 0.5));
+  /* Removed box-shadow */
 }
 
 .section-subtitle {
@@ -580,7 +1387,11 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: var(--font-weight-regular, 400);
   letter-spacing: var(--font-letter-spacing-tight, -0.2px);
   text-align: center;
-  
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .section-subtitle {
+  color: var(--color-text-secondary);
 }
 
 .section-header {
@@ -691,6 +1502,11 @@ html::-webkit-scrollbar-thumb:hover {
   cursor: pointer;
 }
 
+/* Auto-activate text - darker color in light mode */
+[data-theme="light"] .auto-activate-toggle {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9)) !important; /* Darker color, not white */
+}
+
 .auto-activate-toggle input[type="checkbox"] {
   cursor: pointer;
   accent-color: var(--color-brand-primary-500, #4f7f4e);
@@ -788,22 +1604,7 @@ html::-webkit-scrollbar-thumb:hover {
   text-align: center;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-brand-primary-500, #4f7f4e);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-slower, 500ms) var(--easing-ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
-}
-
-.stat-card:hover::before {
-  transform: scaleX(1);
-}
+/* Removed ::before pseudo-element - no top line on stat cards */
 
 .stat-card:hover {
   transform: translateY(-4px);
@@ -814,23 +1615,7 @@ html::-webkit-scrollbar-thumb:hover {
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-10, 0.1));
 }
 
-.stat-card.primary::before {
-  background: var(--color-brand-primary-500, #4f7f4e);
-}
-
-.stat-card.success::before {
-  background: var(--color-semantic-success-500, #34c759);
-}
-
-.stat-card.info::before {
-  background: var(--color-semantic-info-500, #2196f3);
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(79, 127, 78, var(--opacity-30));
-}
+/* Removed individual stat-card::before rules - no top line */
 
 .stat-icon {
   width: var(--avatar-lg, 64px);
@@ -860,10 +1645,7 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--color-brand-primary-400);
 }
 
-/* Add subtle gold accent to secondary stat card */
-.stat-card.info::before {
-  background: linear-gradient(90deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 100%);
-}
+/* Removed info card ::before rule - no top line */
 
 .stat-content {
   display: flex;
@@ -877,11 +1659,16 @@ html::-webkit-scrollbar-thumb:hover {
   margin: 0 0 var(--spacing-2, 8px) 0;
   font-size: var(--font-size-xs, 11px);
   color: rgba(255, 255, 255, var(--opacity-40, 0.4));
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-light, 300);
   text-transform: uppercase;
   letter-spacing: var(--font-letter-spacing-wider, 1.2px);
-  
   text-align: center;
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .stat-content h3 {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-light, 300);
 }
 
 .stat-value {
@@ -891,7 +1678,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--color-neutral-white, #ffffff);
   line-height: var(--font-line-height-tight, 1.2);
   letter-spacing: var(--font-letter-spacing-tight, -0.5px);
-  
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .stat-value {
+  color: var(--color-text-primary);
 }
 
 /* Welcome Card - Minimal Futuristic - Centered */
@@ -911,7 +1702,7 @@ html::-webkit-scrollbar-thumb:hover {
   z-index: 2;
   color: var(--color-neutral-white, #ffffff);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, var(--opacity-40, 0.4)),
+    0 4px 16px rgba(0, 0, 0, var(--opacity-20, 0.2)),
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-5, 0.05));
   transition: all var(--duration-slow, 350ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
   overflow: hidden;
@@ -921,22 +1712,7 @@ html::-webkit-scrollbar-thumb:hover {
   text-align: center;
 }
 
-/* Add subtle gold accent border on hover */
-.welcome-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 50%, var(--color-brand-primary-500) 100%);
-  opacity: 0;
-  transition: opacity var(--duration-normal) var(--easing-ease-out);
-}
-
-.welcome-card:hover::after {
-  opacity: 1;
-}
+/* Removed ::after pseudo-element - no bottom line on welcome card */
 
 .welcome-card > div:last-child {
   display: flex;
@@ -947,12 +1723,12 @@ html::-webkit-scrollbar-thumb:hover {
 
 
 .welcome-card:hover {
+  transform: translateY(-4px);
   border-color: rgba(79, 127, 78, var(--opacity-40, 0.4));
   box-shadow: 
     0 12px 40px rgba(0, 0, 0, var(--opacity-40, 0.4)),
     0 0 0 1px rgba(79, 127, 78, var(--opacity-30, 0.3)),
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-10, 0.1));
-  transform: translateY(-2px);
 }
 
 .welcome-icon {
@@ -964,6 +1740,16 @@ html::-webkit-scrollbar-thumb:hover {
   justify-content: center;
   animation: rocketLaunch 3s ease-in-out infinite;
   transform-origin: center bottom;
+}
+
+/* Keep rocket icon green in light mode */
+[data-theme="light"] .welcome-icon {
+  color: var(--color-brand-primary-400, #6fa46e) !important;
+}
+
+/* Ensure rocket icon SVG stays green in light mode */
+[data-theme="light"] .welcome-icon svg {
+  color: var(--color-brand-primary-400, #6fa46e) !important;
 }
 
 @keyframes rocketLaunch {
@@ -1003,10 +1789,15 @@ html::-webkit-scrollbar-thumb:hover {
 .welcome-card h3 {
   margin: 0 0 var(--spacing-3, 12px) 0;
   font-size: var(--font-size-2xl, 24px);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-regular, 400);
   color: var(--color-neutral-white, #ffffff);
   letter-spacing: var(--font-letter-spacing-tight, -0.5px);
-  
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .welcome-card h3 {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-regular, 400);
 }
 
 .welcome-card p {
@@ -1015,6 +1806,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: rgba(255, 255, 255, var(--opacity-60, 0.6));
   line-height: var(--font-line-height-relaxed, 1.6);
   letter-spacing: var(--font-letter-spacing-tight, -0.2px);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .welcome-card p {
+  color: var(--color-text-primary);
 }
 
 /* Section Centering - All sections centered */
@@ -1095,7 +1891,7 @@ html::-webkit-scrollbar-thumb:hover {
   border-radius: var(--border-radius-xl, 20px);
   border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-20, 0.2));
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, var(--opacity-40, 0.4)),
+    0 4px 16px rgba(0, 0, 0, var(--opacity-20, 0.2)),
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-5, 0.05));
   transition: all var(--duration-slow, 350ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
   position: relative;
@@ -1251,6 +2047,24 @@ html::-webkit-scrollbar-thumb:hover {
   transform: translateY(-1px);
 }
 
+/* View Current Manifest button - same color as border, green hover in light mode */
+[data-theme="light"] .view-manifest-btn {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+  background: transparent !important;
+}
+
+[data-theme="light"] .view-manifest-btn:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text and icon on hover */
+  transform: translateY(-1px);
+}
+
+/* View Current Manifest button icon - white on hover */
+[data-theme="light"] .view-manifest-btn:hover:not(:disabled) svg,
+[data-theme="light"] .view-manifest-btn:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
 /* Users Search - Centered */
 .users-search-container {
   margin-top: var(--spacing-12);
@@ -1333,7 +2147,7 @@ html::-webkit-scrollbar-thumb:hover {
   border-radius: 20px;
   border: 1px solid rgba(79, 127, 78, 0.2);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, var(--opacity-15, 0.15)),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   overflow-x: auto;
@@ -1740,12 +2554,6 @@ html::-webkit-scrollbar-thumb:hover {
   height: var(--icon-size-sm, 16px);
 }
 
-.table-action-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, var(--opacity-10));
-  border-color: rgba(255, 255, 255, var(--opacity-20));
-  transform: translateY(-1px);
-}
-
 .reset-password-btn:hover:not(:disabled) {
   background: rgba(79, 127, 78, var(--opacity-20));
   border-color: var(--color-brand-primary-500);
@@ -1794,7 +2602,7 @@ html::-webkit-scrollbar-thumb:hover {
   margin: 0 auto;
   margin-top: var(--spacing-10);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, var(--opacity-15, 0.15)),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   overflow-x: auto;
@@ -1962,7 +2770,7 @@ html::-webkit-scrollbar-thumb:hover {
   border-radius: 20px;
   border: var(--border-width-thin) solid rgba(79, 127, 78, var(--opacity-20, 0.2));
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, var(--opacity-40, 0.4)),
+    0 4px 16px rgba(0, 0, 0, var(--opacity-20, 0.2)),
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-5, 0.05));
   max-width: 600px;
   width: 100%;
@@ -2026,12 +2834,20 @@ html::-webkit-scrollbar-thumb:hover {
   font-size: var(--font-size-base);
   line-height: var(--font-line-height-relaxed);
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 .export-content p.additional-info {
   font-size: var(--font-size-sm);
   color: rgba(255, 255, 255, var(--opacity-60));
   margin-top: var(--spacing-2);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .export-content p,
+[data-theme="light"] .export-content p.additional-info {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium, 500);
 }
 
 .export-content .export-button {
@@ -2082,27 +2898,7 @@ html::-webkit-scrollbar-thumb:hover {
   width: 100%;
 }
 
-/* Add subtle gold accent to alternating info cards */
-.info-card:nth-child(even)::before {
-  background: linear-gradient(90deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 100%);
-}
-
-.info-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-brand-primary-500, #4f7f4e);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-slower, 500ms) var(--easing-ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
-}
-
-.info-card:hover::before {
-  transform: scaleX(1);
-}
+/* Removed ::before pseudo-element - no top line on info cards (matching stat cards) */
 
 .info-card:hover {
   transform: translateY(-4px);
@@ -2111,6 +2907,16 @@ html::-webkit-scrollbar-thumb:hover {
     0 12px 40px rgba(0, 0, 0, var(--opacity-40, 0.4)),
     0 0 0 1px rgba(79, 127, 78, var(--opacity-30, 0.3)),
     inset 0 1px 0 rgba(255, 255, 255, var(--opacity-10, 0.1));
+}
+
+/* Info card hover - same as stat card hover in light mode */
+[data-theme="light"] .info-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 127, 78, var(--opacity-60, 0.6)); /* Darker border for light mode */
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, var(--opacity-20, 0.2)),
+    0 0 0 1px rgba(79, 127, 78, var(--opacity-50, 0.5)), /* Darker border highlight */
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-5, 0.05));
 }
 
 .info-icon {
@@ -2134,9 +2940,18 @@ html::-webkit-scrollbar-thumb:hover {
   filter: drop-shadow(0 4px 12px rgba(233, 184, 91, var(--opacity-40)));
 }
 
-/* Add gold accent to specific info icons */
+/* Add gold accent to specific info icons - only in dark mode */
 .info-card:nth-child(even) .info-icon {
   color: var(--color-brand-secondary-400);
+}
+
+/* Remove gold icons in light mode - make them all same dark color */
+[data-theme="light"] .info-card:nth-child(even) .info-icon {
+  color: var(--color-brand-primary-500, #4f7f4e);
+}
+
+[data-theme="light"] .info-icon {
+  color: var(--color-brand-primary-500, #4f7f4e);
 }
 
 .info-content {
@@ -2151,11 +2966,16 @@ html::-webkit-scrollbar-thumb:hover {
   margin: 0 0 var(--spacing-2, 8px) 0;
   font-size: var(--font-size-xs, 11px);
   color: rgba(255, 255, 255, var(--opacity-40, 0.4));
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--font-weight-regular, 400);
   text-transform: uppercase;
   letter-spacing: var(--font-letter-spacing-wider, 1.2px);
-  
   text-align: center;
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .info-content h3 {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-regular, 400);
 }
 
 .info-content p {
@@ -2272,6 +3092,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: rgba(255, 255, 255, var(--opacity-80));
   font-size: var(--font-size-base);
   line-height: var(--font-line-height-relaxed);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .modal-body p {
+  color: var(--color-text-primary);
 }
 
 .modal-body p:last-child {
@@ -2281,6 +3106,11 @@ html::-webkit-scrollbar-thumb:hover {
 .modal-body strong {
   color: var(--color-neutral-white);
   font-weight: var(--font-weight-semibold);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .modal-body strong {
+  color: var(--color-text-primary);
 }
 
 .modal-form {
@@ -2324,6 +3154,7 @@ html::-webkit-scrollbar-thumb:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   transition: all var(--duration-normal) var(--easing-ease-out);
   min-height: var(--touch-target-comfortable, 48px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, var(--opacity-20));
@@ -2427,12 +3258,22 @@ html::-webkit-scrollbar-thumb:hover {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-neutral-white);
+  transition: color 0.3s ease;
 }
 
 .role-description {
   font-size: var(--font-size-sm);
   color: rgba(255, 255, 255, var(--opacity-60, 0.6));
   font-weight: var(--font-weight-normal);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .role-name {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .role-description {
+  color: var(--color-text-secondary) !important;
 }
 
 .modal-input {
@@ -2447,6 +3288,21 @@ html::-webkit-scrollbar-thumb:hover {
   border-radius: var(--border-radius-md, 8px) !important;
   transition: all var(--duration-normal) var(--easing-ease-out) !important;
   font-size: var(--font-size-base) !important;
+}
+
+[data-theme="light"] .modal-input input {
+  background: var(--color-background-card) !important;
+  border-color: var(--color-border-default) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .modal-input input::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+[data-theme="light"] .modal-input input:focus {
+  background: var(--color-background-elevated) !important;
+  border-color: var(--color-brand-primary-500, #4f7f4e) !important;
 }
 
 .modal-input input::placeholder {
@@ -2471,6 +3327,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: rgba(255, 255, 255, var(--opacity-90, 0.9)) !important;
   font-weight: var(--font-weight-semibold) !important;
   margin-bottom: var(--spacing-2, 8px) !important;
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .modal-input label {
+  color: var(--color-text-primary) !important;
 }
 
 .modal-actions {
@@ -2813,10 +3674,13 @@ html::-webkit-scrollbar-thumb:hover {
 
   .dashboard-content {
     padding: var(--spacing-6);
+    padding-top: calc(60px + var(--spacing-8, 32px)); /* Mobile navbar height (60px) + spacing matching gap between tabs and content */
   }
 
   .tab-content {
     padding: var(--spacing-6);
+    padding-bottom: calc(var(--spacing-6, 24px) + var(--spacing-8, 32px)); /* Extra bottom spacing on mobile */
+    margin-bottom: var(--spacing-8, 32px); /* Additional margin from bottom edge on mobile */
   }
 
   .dashboard-tabs {
@@ -2894,9 +3758,19 @@ html::-webkit-scrollbar-thumb:hover {
   font-size: var(--font-size-base);
 }
 
+/* Observation search empty text - darker color in light mode */
+[data-theme="light"] .observation-search-empty p {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9)) !important; /* Darker color in light mode */
+}
+
 .observation-search-empty strong {
   color: var(--color-neutral-white);
   font-weight: var(--font-weight-semibold);
+}
+
+/* Observation search empty strong text - darker color in light mode */
+[data-theme="light"] .observation-search-empty strong {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9)) !important; /* Darker color in light mode */
 }
 
 .observation-search-empty .clear-search-button {
@@ -2940,10 +3814,20 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: var(--font-weight-medium, 500);
 }
 
+/* User search empty heading - darker color in light mode */
+[data-theme="light"] .user-search-empty h3 {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9)) !important; /* Darker color in light mode */
+}
+
 .user-search-empty p {
   color: rgba(255, 255, 255, var(--opacity-70));
   margin-bottom: var(--spacing-6, 24px);
   font-size: var(--font-size-base);
+}
+
+/* User search empty text - darker color in light mode */
+[data-theme="light"] .user-search-empty p {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9)) !important; /* Darker color in light mode */
 }
 
 .user-search-empty .clear-search-button {
@@ -2977,6 +3861,12 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: var(--font-weight-semibold);
   text-align: center;
   width: 100%;
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .system-info-title {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 .health-status-title {
@@ -3055,6 +3945,719 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 /* App Bundles, Users, and Overview Sections inherit styles from tab-content */
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+
+[data-theme="light"] .dashboard {
+  background-color: var(--color-background-base);
+}
+
+[data-theme="light"] .dashboard-header {
+  background: var(--color-background-elevated);
+  border-bottom-color: var(--color-border-default);
+}
+
+[data-theme="light"] .welcome-text,
+[data-theme="light"] .section-subtitle,
+[data-theme="light"] .empty-state p,
+[data-theme="light"] .loading-state p,
+[data-theme="light"] .info-content p,
+[data-theme="light"] .stat-label,
+[data-theme="light"] .bundle-info p,
+[data-theme="light"] .user-info p,
+[data-theme="light"] .observation-info p,
+[data-theme="light"] .geolocation-info,
+[data-theme="light"] .system-info-text,
+[data-theme="light"] .health-status-text,
+[data-theme="light"] .modal-body p,
+[data-theme="light"] .form-group label,
+[data-theme="light"] .search-input::placeholder,
+[data-theme="light"] td,
+[data-theme="light"] .bundle-version,
+[data-theme="light"] .bundle-date {
+  color: var(--color-text-secondary);
+}
+
+/* Keep table action buttons (Delete, Reset Password) with dark mode colors in light mode */
+[data-theme="light"] .table-action-btn {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .delete-btn {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .reset-password-btn {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .section-title h2,
+[data-theme="light"] .welcome-card h3,
+[data-theme="light"] .stat-content h3,
+[data-theme="light"] .bundle-info h3,
+[data-theme="light"] .empty-state h3,
+[data-theme="light"] .export-content h3,
+[data-theme="light"] .info-content h3,
+[data-theme="light"] .user-info h3,
+[data-theme="light"] .health-status-section h3,
+[data-theme="light"] .observation-search-empty h3,
+[data-theme="light"] .user-search-empty h3,
+[data-theme="light"] .modal-header h2,
+[data-theme="light"] .files-list h3,
+[data-theme="light"] .changes-section h3,
+[data-theme="light"] .users-table th,
+[data-theme="light"] .observations-table th,
+[data-theme="light"] .bundle-version-label,
+[data-theme="light"] .bundle-date-label {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .section-card,
+[data-theme="light"] .modal-content,
+[data-theme="light"] .tab-content,
+[data-theme="light"] .search-bar,
+[data-theme="light"] .role-dropdown-menu {
+  background: var(--color-background-card);
+  border-color: var(--color-border-default);
+}
+
+/* Different shades for containers in light mode - similar to dark mode hierarchy */
+[data-theme="light"] .welcome-card {
+  background: rgba(79, 127, 78, var(--opacity-8, 0.08));
+  border-color: rgba(79, 127, 78, var(--opacity-20, 0.2));
+}
+
+[data-theme="light"] .stat-card {
+  background: rgba(0, 0, 0, var(--opacity-2, 0.02));
+  border-color: var(--color-border-default);
+}
+
+/* First three stat cards (System Status, User Role, Username) - white but slightly transparent in light mode (like dark mode transparency) */
+[data-theme="light"] .stat-card:nth-child(1) {
+  background: rgba(255, 255, 255, var(--opacity-95, 0.95));
+}
+
+[data-theme="light"] .stat-card:nth-child(2) {
+  background: rgba(255, 255, 255, var(--opacity-95, 0.95));
+}
+
+[data-theme="light"] .stat-card:nth-child(3) {
+  background: rgba(255, 255, 255, var(--opacity-95, 0.95));
+}
+
+/* All four cards (three stat cards + welcome card) - same hover effect with darker border highlight in light mode */
+[data-theme="light"] .stat-card:hover,
+[data-theme="light"] .welcome-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 127, 78, var(--opacity-60, 0.6)); /* Darker border for light mode */
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, var(--opacity-20, 0.2)),
+    0 0 0 1px rgba(79, 127, 78, var(--opacity-50, 0.5)), /* Darker border highlight */
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-5, 0.05));
+}
+
+[data-theme="light"] .bundle-card {
+  background: rgba(0, 0, 0, var(--opacity-2, 0.02));
+  border-color: var(--color-border-default);
+}
+
+[data-theme="light"] .bundle-card:nth-child(odd) {
+  background: rgba(79, 127, 78, var(--opacity-5, 0.05));
+}
+
+[data-theme="light"] .bundle-card:nth-child(even) {
+  background: rgba(233, 184, 91, var(--opacity-5, 0.05));
+}
+
+
+/* Section container backgrounds - different shades in light mode to create depth */
+[data-theme="light"] .app-bundles-section {
+  background: rgba(79, 127, 78, var(--opacity-3, 0.03));
+  border-radius: var(--border-radius-xl, 20px);
+  padding: var(--spacing-6, 24px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-10, 0.1));
+}
+
+[data-theme="light"] .app-bundles-section .bundles-grid {
+  background: rgba(0, 0, 0, var(--opacity-2, 0.02));
+  padding: var(--spacing-6, 24px);
+  border-radius: var(--border-radius-lg, 12px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-8, 0.08));
+}
+
+[data-theme="light"] .users-section {
+  background: rgba(79, 127, 78, var(--opacity-3, 0.03));
+  border-radius: var(--border-radius-xl, 20px);
+  padding: var(--spacing-6, 24px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-10, 0.1));
+}
+
+[data-theme="light"] .users-table-container {
+  background: rgba(0, 0, 0, var(--opacity-2, 0.02));
+  border-color: rgba(79, 127, 78, var(--opacity-15, 0.15));
+  border: 1px solid rgba(79, 127, 78, var(--opacity-15, 0.15));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, var(--opacity-8, 0.08)) !important; /* Reduced shadow for light mode */
+}
+
+[data-theme="light"] .observations-section {
+  background: rgba(79, 127, 78, var(--opacity-3, 0.03));
+  border-radius: var(--border-radius-xl, 20px);
+  padding: var(--spacing-6, 24px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-10, 0.1));
+}
+
+[data-theme="light"] .observations-table-container {
+  background: rgba(0, 0, 0, var(--opacity-2, 0.02));
+  border-color: rgba(79, 127, 78, var(--opacity-15, 0.15));
+  border: 1px solid rgba(79, 127, 78, var(--opacity-15, 0.15));
+}
+
+[data-theme="light"] .data-export-section {
+  background: rgba(79, 127, 78, var(--opacity-3, 0.03));
+  border-radius: var(--border-radius-xl, 20px);
+  padding: var(--spacing-6, 24px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-10, 0.1));
+}
+
+/* Export card - same white background as stat cards and info cards in light mode */
+[data-theme="light"] .export-card {
+  background: rgba(255, 255, 255, var(--opacity-95, 0.95)); /* White but slightly transparent, matching stat cards */
+  border-color: var(--color-border-default);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, var(--opacity-8, 0.08)),
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-3, 0.03));
+}
+
+/* Export card hover - same as stat card hover in light mode */
+[data-theme="light"] .export-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(79, 127, 78, var(--opacity-60, 0.6)); /* Darker border for light mode */
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, var(--opacity-20, 0.2)),
+    0 0 0 1px rgba(79, 127, 78, var(--opacity-50, 0.5)), /* Darker border highlight */
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-5, 0.05));
+}
+
+[data-theme="light"] .system-section {
+  background: rgba(79, 127, 78, var(--opacity-3, 0.03));
+  border-radius: var(--border-radius-xl, 20px);
+  padding: var(--spacing-6, 24px);
+  border: 1px solid rgba(79, 127, 78, var(--opacity-10, 0.1));
+}
+
+/* Info cards - same white/light grey background as stat cards in light mode */
+[data-theme="light"] .info-card {
+  background: rgba(255, 255, 255, var(--opacity-95, 0.95)); /* White but slightly transparent, matching stat cards */
+  border-color: var(--color-border-default);
+}
+
+[data-theme="light"] .section-card,
+[data-theme="light"] .welcome-card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .bundle-card,
+[data-theme="light"] .info-card,
+[data-theme="light"] .modal-content {
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, var(--opacity-8, 0.08)),
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-3, 0.03));
+}
+
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] input[type="email"],
+[data-theme="light"] textarea,
+[data-theme="light"] select,
+[data-theme="light"] .search-input input,
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select,
+[data-theme="light"] .role-select-button {
+  background: var(--color-background-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] .search-input input:focus,
+[data-theme="light"] .form-group input:focus {
+  border-color: var(--color-brand-primary-500, #4f7f4e);
+  background: var(--color-background-elevated);
+}
+
+[data-theme="light"] .users-table,
+[data-theme="light"] .observations-table {
+  background: var(--color-background-elevated);
+}
+
+[data-theme="light"] .users-table th,
+[data-theme="light"] .observations-table th {
+  background: var(--color-background-overlay);
+  border-bottom-color: var(--color-border-default);
+}
+
+[data-theme="light"] .users-table td,
+[data-theme="light"] .observations-table td {
+  border-bottom-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .users-table tr:hover,
+[data-theme="light"] .observations-table tr:hover {
+  background: var(--color-background-card);
+}
+
+[data-theme="light"] .modal-overlay {
+  background: rgba(0, 0, 0, var(--opacity-50, 0.5));
+}
+
+[data-theme="light"] .logout-button {
+  background: rgba(244, 67, 54, var(--opacity-8, 0.08));
+  border-color: rgba(244, 67, 54, var(--opacity-20, 0.2));
+  color: var(--color-semantic-error-600, #DC2626);
+}
+
+[data-theme="light"] .logout-button:hover {
+  background: rgba(244, 67, 54, var(--opacity-15, 0.15)) !important;
+  border: 1px solid var(--color-semantic-error-500, #F44336) !important;
+}
+
+[data-theme="light"] .logout-button:hover::after {
+  opacity: 0;
+}
+
+/* Tab buttons keep dark mode styles in light mode - exact same colors */
+/* Navigation links container - slightly transparent white background in light mode only */
+[data-theme="light"] .dashboard-tabs {
+  background: rgba(255, 255, 255, 0.98) !important; /* Slightly transparent white - almost unnoticeable */
+}
+
+[data-theme="light"] .dashboard-tabs button.tab-button {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green text - same as dark mode */
+  background: transparent !important; /* Same as dark mode */
+}
+
+/* Icons - green color in inactive state (same as dark mode) */
+[data-theme="light"] .dashboard-tabs button.tab-button .tab-icon {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green icon - same as dark mode */
+}
+
+/* Hover styles - white text and white icon (same as dark mode) */
+[data-theme="light"] .dashboard-tabs button.tab-button:hover {
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover - same as dark mode */
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover - same as dark mode */
+  /* Removed transform: translateY(-1px) - buttons stay in position */
+}
+
+[data-theme="light"] .dashboard-tabs button.tab-button:hover .tab-icon {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover - same as dark mode */
+}
+
+[data-theme="light"] .dashboard-tabs button.tab-button:hover svg.border-fade {
+  opacity: 0 !important; /* Hide border on hover - same as dark mode */
+}
+
+/* Active styles - white text and white icon (same as dark mode) */
+[data-theme="light"] .dashboard-tabs button.tab-button.active {
+  color: var(--color-neutral-white, #ffffff) !important; /* White text when active - same as dark mode */
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background when active - same as dark mode */
+  /* Removed transform: translateY(-1px) - buttons stay in position */
+  font-weight: var(--font-weight-bold, 700) !important; /* Same font weight as dark mode */
+}
+
+[data-theme="light"] .dashboard-tabs button.tab-button.active .tab-icon {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon when active - same as dark mode */
+}
+
+[data-theme="light"] .dashboard-tabs button.tab-button.active svg.border-fade {
+  opacity: 0 !important; /* Hide border when active - same as dark mode */
+}
+
+/* Border styles - keep exact same as dark mode (SVG border fade) */
+[data-theme="light"] .dashboard-tabs button.tab-button svg.border-fade {
+  opacity: 1 !important; /* Same opacity as dark mode */
+}
+
+/* Border colors and styles remain the same as dark mode - no changes needed for svg.border-fade rect */
+
+/* Buttons keep dark mode styles in light mode - explicit overrides to preserve dark mode */
+[data-theme="light"] .upload-button,
+[data-theme="light"] .create-button,
+[data-theme="light"] .export-button {
+  color: var(--color-brand-primary-500, #4f7f4e) !important;
+  background: transparent !important;
+}
+
+/* Upload Bundle button - green icon in inactive state */
+[data-theme="light"] .upload-button svg,
+[data-theme="light"] .upload-button svg * {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green icon when inactive */
+}
+
+[data-theme="light"] .upload-button:hover:not(:disabled):not(.uploading),
+[data-theme="light"] .create-button:hover:not(:disabled),
+[data-theme="light"] .export-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Upload Bundle button - white icon on hover */
+[data-theme="light"] .upload-button:hover:not(:disabled):not(.uploading) svg,
+[data-theme="light"] .upload-button:hover:not(:disabled):not(.uploading) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* App Bundles page - light mode only */
+[data-theme="light"] .app-bundles-section .refresh-button {
+  color: var(--color-neutral-600, #757575) !important; /* Keep current inactive state - grey text */
+  background: transparent !important;
+}
+
+/* Refresh button icon - grey in inactive state */
+[data-theme="light"] .app-bundles-section .refresh-button svg,
+[data-theme="light"] .app-bundles-section .refresh-button svg * {
+  color: var(--color-neutral-600, #757575) !important; /* Grey icon when inactive */
+}
+
+[data-theme="light"] .app-bundles-section .refresh-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Refresh button icon - white on hover */
+[data-theme="light"] .app-bundles-section .refresh-button:hover:not(:disabled) svg,
+[data-theme="light"] .app-bundles-section .refresh-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Other pages refresh button - keep existing style (more specific selector) */
+/* Users page - light mode only */
+[data-theme="light"] .users-section .refresh-button {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+  background: transparent !important;
+}
+
+/* Refresh button icon - keep as is (don't change icon color) */
+[data-theme="light"] .users-section .refresh-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Refresh button icon - white on hover */
+[data-theme="light"] .users-section .refresh-button:hover:not(:disabled) svg,
+[data-theme="light"] .users-section .refresh-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Create User button - Users page only, light mode */
+[data-theme="light"] .users-section .create-button {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green text */
+  background: transparent !important;
+}
+
+/* Create User button icon - border color (green) in non-hover state */
+[data-theme="light"] .users-section .create-button svg,
+[data-theme="light"] .users-section .create-button svg * {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green, same as border */
+}
+
+[data-theme="light"] .users-section .create-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Create User button icon - white on hover */
+[data-theme="light"] .users-section .create-button:hover:not(:disabled) svg,
+[data-theme="light"] .users-section .create-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Export Data button - Data Export page only, light mode */
+[data-theme="light"] .data-export-section .export-button {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green text */
+  background: transparent !important;
+}
+
+/* Export Data button icon - border color (green) in non-hover state */
+[data-theme="light"] .data-export-section .export-button svg,
+[data-theme="light"] .data-export-section .export-button svg * {
+  color: var(--color-brand-primary-500, #4f7f4e) !important; /* Green, same as border */
+}
+
+[data-theme="light"] .data-export-section .export-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Export Data button icon - white on hover */
+[data-theme="light"] .data-export-section .export-button:hover:not(:disabled) svg,
+[data-theme="light"] .data-export-section .export-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Observations page - light mode only */
+[data-theme="light"] .observations-section .refresh-button {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+  background: transparent !important;
+}
+
+/* Refresh button icon - keep as is (don't change icon color) */
+[data-theme="light"] .observations-section .refresh-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Refresh button icon - white on hover */
+[data-theme="light"] .observations-section .refresh-button:hover:not(:disabled) svg,
+[data-theme="light"] .observations-section .refresh-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* System page - light mode only */
+[data-theme="light"] .system-section .refresh-button {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+  background: transparent !important;
+}
+
+/* Refresh button icon - keep as is (don't change icon color) */
+[data-theme="light"] .system-section .refresh-button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+}
+
+/* Refresh button icon - white on hover */
+[data-theme="light"] .system-section .refresh-button:hover:not(:disabled) svg,
+[data-theme="light"] .system-section .refresh-button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Delete button - Users page only, light mode */
+[data-theme="light"] .users-section .delete-btn {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+}
+
+/* Delete button icon - keep as is (don't change icon color) */
+[data-theme="light"] .users-section .delete-btn:hover:not(:disabled) {
+  background: rgba(244, 67, 54, var(--opacity-30, 0.3)) !important;
+  border-color: var(--color-semantic-error-500, #f44336) !important;
+  color: var(--color-semantic-error-500, #f44336) !important;
+}
+
+/* Delete button icon - red on hover */
+[data-theme="light"] .users-section .delete-btn:hover:not(:disabled) svg,
+[data-theme="light"] .users-section .delete-btn:hover:not(:disabled) svg * {
+  color: var(--color-semantic-error-500, #f44336) !important; /* Red icon on hover */
+}
+
+/* Other pages delete button - keep existing style */
+[data-theme="light"] .delete-btn:not(.users-section .delete-btn) {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .delete-btn:not(.users-section .delete-btn):hover:not(:disabled) {
+  background: rgba(244, 67, 54, var(--opacity-30, 0.3)) !important;
+  border-color: var(--color-semantic-error-500, #f44336) !important;
+  color: var(--color-semantic-error-500, #f44336) !important;
+}
+
+/* Reset Password button - Users page only, light mode */
+[data-theme="light"] .users-section .reset-password-btn {
+  color: var(--color-neutral-600, #757575) !important; /* Same color as border */
+  border-color: rgba(233, 184, 91, var(--opacity-20)) !important;
+}
+
+/* Reset Password button icon - keep as is (don't change icon color) */
+[data-theme="light"] .users-section .reset-password-btn:hover:not(:disabled) {
+  background: var(--color-brand-primary-500, #4f7f4e) !important; /* Green background on hover */
+  color: var(--color-neutral-white, #ffffff) !important; /* White text on hover */
+  border-color: var(--color-brand-primary-500, #4f7f4e) !important;
+}
+
+/* Reset Password button icon - white on hover */
+[data-theme="light"] .users-section .reset-password-btn:hover:not(:disabled) svg,
+[data-theme="light"] .users-section .reset-password-btn:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white, #ffffff) !important; /* White icon on hover */
+}
+
+/* Other pages reset password button - keep existing style */
+[data-theme="light"] .reset-password-btn:not(.users-section .reset-password-btn) {
+  color: var(--color-neutral-white, #ffffff) !important;
+  border-color: rgba(233, 184, 91, var(--opacity-20)) !important;
+}
+
+[data-theme="light"] .reset-password-btn:not(.users-section .reset-password-btn):hover:not(:disabled) {
+  background: rgba(79, 127, 78, var(--opacity-20)) !important;
+  border-color: var(--color-brand-secondary-500) !important;
+  color: var(--color-brand-primary-300) !important;
+  box-shadow: 0 0 8px rgba(233, 184, 91, var(--opacity-30)) !important;
+}
+
+[data-theme="light"] .empty-state,
+[data-theme="light"] .loading-state {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="light"] .empty-icon {
+  color: var(--color-text-tertiary);
+}
+
+[data-theme="light"] .error-message {
+  background: var(--color-semantic-error-50, #FEF2F2);
+  border-color: rgba(244, 67, 54, var(--opacity-30, 0.3));
+  color: var(--color-semantic-error-600, #DC2626);
+}
+
+[data-theme="light"] .success-message {
+  background: var(--color-semantic-success-50, #F0F9F0);
+  border-color: rgba(52, 199, 89, var(--opacity-30, 0.3));
+  color: var(--color-semantic-success-600, #2E7D32);
+}
+
+[data-theme="light"] .role-dropdown-menu {
+  background: var(--color-background-elevated);
+  border-color: var(--color-border-default);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, var(--opacity-10, 0.1)),
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-3, 0.03));
+}
+
+[data-theme="light"] .role-option {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .role-option:hover {
+  background: var(--color-background-card) !important;
+}
+
+[data-theme="light"] .role-option.selected {
+  background: rgba(79, 127, 78, var(--opacity-8, 0.08)) !important;
+  border-color: rgba(79, 127, 78, var(--opacity-20, 0.2)) !important;
+}
+
+[data-theme="light"] .role-option .role-name {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .role-option .role-description {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="light"] .role-select-button {
+  background: var(--color-background-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .role-select-button:hover {
+  background: var(--color-background-elevated);
+  border-color: var(--color-border-hover);
+}
+
+[data-theme="light"] .users-table-container .search-input input,
+[data-theme="light"] .observations-table-container .search-input input,
+[data-theme="light"] .users-table-container .ode-input input,
+[data-theme="light"] .observations-table-container .ode-input input {
+  background: rgba(255, 255, 255, 1) !important; /* Keep white background in light mode */
+  border-color: var(--color-border-default) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .users-table-container .search-input input:focus,
+[data-theme="light"] .observations-table-container .search-input input:focus,
+[data-theme="light"] .users-table-container .ode-input input:focus,
+[data-theme="light"] .observations-table-container .ode-input input:focus {
+  background: rgba(255, 255, 255, 1) !important; /* Keep white background on focus */
+  border-color: var(--color-brand-primary-500, #4f7f4e) !important;
+}
+
+[data-theme="light"] .users-table-container .search-input input::placeholder,
+[data-theme="light"] .observations-table-container .search-input input::placeholder,
+[data-theme="light"] .users-table-container .ode-input input::placeholder,
+[data-theme="light"] .observations-table-container .ode-input input::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+[data-theme="light"] .search-clear-icon,
+[data-theme="light"] .search-icon-button,
+[data-theme="light"] .users-table-container .search-clear-icon,
+[data-theme="light"] .observations-table-container .search-clear-icon,
+[data-theme="light"] .users-table-container .search-icon-button,
+[data-theme="light"] .observations-table-container .search-icon-button {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="light"] .search-clear-icon:hover,
+[data-theme="light"] .search-icon-button:hover,
+[data-theme="light"] .users-table-container .search-clear-icon:hover,
+[data-theme="light"] .observations-table-container .search-clear-icon:hover,
+[data-theme="light"] .users-table-container .search-icon-button:hover,
+[data-theme="light"] .observations-table-container .search-icon-button:hover {
+  color: var(--color-text-primary);
+}
+
+/* Ensure all icons are dark in light mode */
+/* Tab icons keep dark mode styles - no light mode overrides */
+[data-theme="light"] .info-icon,
+[data-theme="light"] .empty-icon,
+[data-theme="light"] .stat-icon {
+  color: var(--color-text-secondary);
+}
+
+/* Tab buttons keep dark mode styles - no light mode overrides for colors/hover */
+
+/* Remove gold icons in light mode - all icons same dark color */
+[data-theme="light"] .info-icon {
+  color: var(--color-brand-primary-500, #4f7f4e);
+}
+
+[data-theme="light"] .info-card:nth-child(even) .info-icon {
+  color: var(--color-brand-primary-500, #4f7f4e);
+}
+
+/* Additional light mode text and icon overrides */
+[data-theme="light"] .modal-input label,
+[data-theme="light"] .form-group label,
+[data-theme="light"] .ode-input label {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .modal-body,
+[data-theme="light"] .modal-content p,
+[data-theme="light"] .modal-content span:not(.role-name):not(.role-description) {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .role-option {
+  border-bottom-color: var(--color-border-default) !important;
+}
+
+[data-theme="light"] .role-option:hover {
+  background: var(--color-background-card) !important;
+}
+
+[data-theme="light"] .role-option.selected {
+  background: rgba(79, 127, 78, var(--opacity-8, 0.08)) !important;
+  border-left-color: var(--color-brand-primary-500, #4f7f4e) !important;
+}
+
+/* Ensure all SVG icons inherit proper colors in light mode */
+/* Exclude tab icons from general SVG color override */
+[data-theme="light"] svg:not(.theme-switcher-icon):not(.theme-option-icon):not(.tab-icon):not(.dashboard-tabs svg):not(.welcome-icon svg) {
+  color: var(--color-text-secondary);
+}
+
+/* Tab buttons keep dark mode styles - icons stay as dark mode */
+
+[data-theme="light"] .info-icon svg {
+  color: var(--color-brand-primary-500, #4f7f4e);
+}
+
+[data-theme="light"] .info-card:nth-child(even) .info-icon svg {
+  color: var(--color-brand-primary-500, #4f7f4e);
+}
 
 
 

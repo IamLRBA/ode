@@ -1,0 +1,426 @@
+/* Theme Switcher Component Styles */
+
+.theme-switcher-container {
+  position: relative;
+  display: inline-block;
+}
+
+
+.theme-switcher-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2, 8px);
+  width: 40px;
+  height: 40px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px;
+  color: var(--color-brand-primary-500, #4f7f4e);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: visible;
+}
+
+/* Faded border effect - opposite direction (right to left) */
+/* Created the border using a gradient background and mask to show only border */
+.theme-switcher-button::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.05) 15%,
+    rgba(79, 127, 78, 0.1) 30%,
+    rgba(79, 127, 78, 0.15) 45%,
+    rgba(79, 127, 78, 0.2) 60%,
+    rgba(79, 127, 78, 0.25) 75%,
+    rgba(79, 127, 78, 0.3) 90%,
+    rgba(79, 127, 78, 0.3) 100%
+  );
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 0;
+  border-width: 1px;
+}
+
+/* Animated gradient overlay on hover - removed per user request */
+.theme-switcher-button::before {
+  display: none;
+}
+
+.theme-switcher-button:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important;
+  border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+  transform: translateY(-1px);
+}
+
+.theme-switcher-button:hover::after {
+  display: none;
+}
+
+/* When open, maintain normal styles (not transparent) - desktop only */
+@media (min-width: 1025px) {
+  .user-info .theme-switcher-button.open {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .user-info .theme-switcher-button.open::after {
+    opacity: 1 !important;
+  }
+
+  /* When open, hover should still work normally */
+  .user-info .theme-switcher-button.open:hover {
+    background: var(--color-brand-primary-500, #4f7f4e) !important;
+    border: 1px solid var(--color-brand-primary-500, #4f7f4e) !important;
+    transform: translateY(-1px);
+  }
+
+  .user-info .theme-switcher-button.open:hover::after {
+    display: none;
+  }
+
+  .user-info .theme-switcher-button.open:hover .theme-switcher-icon {
+    color: var(--color-neutral-white, #ffffff) !important;
+  }
+}
+
+/* Mobile menu: keep original open styles */
+.mobile-menu .theme-switcher-button.open {
+  background: transparent !important;
+  border: none !important;
+}
+
+.mobile-menu .theme-switcher-button.open::after {
+  opacity: 1 !important;
+}
+
+.theme-switcher-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg, 18px);
+  color: var(--color-brand-primary-500, #4f7f4e);
+  transition: color 0.25s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-switcher-button:hover .theme-switcher-icon {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+.theme-switcher-text {
+  display: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.theme-switcher-arrow {
+  display: none;
+  font-size: 16px;
+  font-weight: 600;
+  transition: color 0.25s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: var(--spacing-2, 8px);
+  transform: translateY(0);
+}
+
+/* Hide arrow by default (desktop) */
+.theme-switcher-arrow.mobile-only {
+  display: none !important;
+}
+
+/* Show arrow only in mobile menu */
+.mobile-menu .theme-switcher-arrow.mobile-only {
+  display: inline-block !important;
+  color: var(--color-brand-primary-500, #4f7f4e);
+  transition: color 0.25s ease !important;
+  animation: arrowFloat 1.5s ease-in-out infinite;
+}
+
+.mobile-menu .theme-switcher-button:hover .theme-switcher-arrow.mobile-only {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+/* Continuous up and down animation */
+@keyframes arrowFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-arrow.mobile-only {
+  color: var(--color-brand-primary-600, #3d653c);
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button:hover .theme-switcher-arrow.mobile-only {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+.theme-switcher-dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-2, 8px));
+  right: 0;
+  min-width: 220px;
+  background: var(--color-background-elevated, rgba(33, 33, 33, 0.95));
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-20, 0.2));
+  border-radius: var(--border-radius-lg, 12px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, var(--opacity-40, 0.4)),
+    inset 0 1px 0 rgba(255, 255, 255, var(--opacity-5, 0.05));
+  padding: var(--spacing-2, 8px);
+  z-index: var(--z-index-dropdown, 1000);
+  animation: slideDownFade var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
+  overflow: visible;
+}
+
+
+@media (min-width: 1025px) {
+  .user-info .theme-switcher-container .theme-switcher-dropdown {
+    position: fixed;
+    top: calc(80px + var(--spacing-2, 8px));
+    right: 0;
+    left: auto;
+    border: none;
+    border-radius: 0 0 0 16px; 
+  }
+
+  /* Faded border effect - left to right (same as hamburger menu) - desktop only */
+  .user-info .theme-switcher-container .theme-switcher-dropdown::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 0 0 0 16px; 
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.3) 10%,
+      rgba(255, 255, 255, 0.25) 25%,
+      rgba(255, 255, 255, 0.2) 45%,
+      rgba(255, 255, 255, 0.15) 60%,
+      rgba(255, 255, 255, 0.1) 75%,
+      rgba(255, 255, 255, 0.05) 85%,
+      transparent 100%
+    );
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 1px;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-var(--spacing-2, 8px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  width: 100%;
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md, 8px);
+  color: var(--color-text-primary, rgba(255, 255, 255, 0.9));
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
+  position: relative;
+}
+
+.theme-option:hover {
+  background: rgba(255, 255, 255, var(--opacity-5, 0.05));
+}
+
+.theme-option.active {
+  background: rgba(79, 127, 78, var(--opacity-10, 0.1));
+  border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-30, 0.3));
+}
+
+.theme-option-icon {
+  font-size: var(--font-size-lg, 18px);
+  color: var(--color-brand-primary-500, #4f7f4e);
+  flex-shrink: 0;
+}
+
+.theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 4px);
+  flex: 1;
+}
+
+.theme-option-name {
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, rgba(255, 255, 255, 0.9));
+}
+
+.theme-option-description {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.theme-option-check {
+  font-size: var(--font-size-base, 16px);
+  color: var(--color-brand-primary-500, #4f7f4e);
+  font-weight: var(--font-weight-bold, 700);
+  flex-shrink: 0;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .theme-switcher-button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-brand-primary-600, #3d653c);
+}
+
+[data-theme="light"] .theme-switcher-button::after {
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(79, 127, 78, 0.03) 15%,
+    rgba(79, 127, 78, 0.06) 30%,
+    rgba(79, 127, 78, 0.1) 45%,
+    rgba(79, 127, 78, 0.13) 60%,
+    rgba(79, 127, 78, 0.16) 75%,
+    rgba(79, 127, 78, 0.18) 90%,
+    rgba(79, 127, 78, 0.2) 100%
+  );
+}
+
+[data-theme="light"] .theme-switcher-button:hover {
+  background: var(--color-brand-primary-500, #4f7f4e) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .theme-switcher-button:hover::after {
+  display: none;
+}
+
+/* Light mode: When open, maintain normal styles (not transparent) - desktop only */
+@media (min-width: 1025px) {
+  [data-theme="light"] .user-info .theme-switcher-button.open {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  [data-theme="light"] .user-info .theme-switcher-button.open::after {
+    opacity: 1 !important;
+  }
+
+  /* When open, hover should still work normally in light mode */
+  [data-theme="light"] .user-info .theme-switcher-button.open:hover {
+    background: var(--color-brand-primary-500, #4f7f4e) !important;
+    border: none !important;
+  }
+
+  [data-theme="light"] .user-info .theme-switcher-button.open:hover::after {
+    display: none;
+  }
+
+  [data-theme="light"] .user-info .theme-switcher-button.open:hover .theme-switcher-icon {
+    color: var(--color-neutral-white, #ffffff) !important;
+  }
+}
+
+/* Mobile menu: keep original open styles for light mode */
+[data-theme="light"] .mobile-menu .theme-switcher-button.open {
+  background: transparent !important;
+  border: none !important;
+}
+
+[data-theme="light"] .mobile-menu .theme-switcher-button.open::after {
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .theme-switcher-icon {
+  color: var(--color-brand-primary-600, #3d653c);
+  transition: color 0.25s ease;
+}
+
+[data-theme="light"] .theme-switcher-button:hover .theme-switcher-icon {
+  color: var(--color-neutral-white, #ffffff) !important;
+}
+
+[data-theme="light"] .theme-switcher-dropdown {
+  background: var(--color-background-elevated, rgba(255, 255, 255, 0.95));
+  border-color: rgba(79, 127, 78, var(--opacity-15, 0.15));
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, var(--opacity-10, 0.1)),
+    inset 0 1px 0 rgba(0, 0, 0, var(--opacity-3, 0.03));
+}
+
+/* Desktop-only light mode border - green color like themes button */
+@media (min-width: 1025px) {
+  [data-theme="light"] .user-info .theme-switcher-container .theme-switcher-dropdown {
+    border: none;
+  }
+
+  [data-theme="light"] .user-info .theme-switcher-container .theme-switcher-dropdown::after {
+    border-radius: 0 0 0 16px; 
+    background: linear-gradient(90deg, 
+      rgba(79, 127, 78, 0.2) 0%,
+      rgba(79, 127, 78, 0.2) 10%,
+      rgba(79, 127, 78, 0.18) 25%,
+      rgba(79, 127, 78, 0.15) 45%,
+      rgba(79, 127, 78, 0.12) 60%,
+      rgba(79, 127, 78, 0.08) 75%,
+      rgba(79, 127, 78, 0.04) 85%,
+      transparent 100%
+    );
+  }
+}
+
+[data-theme="light"] .theme-option {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9));
+}
+
+[data-theme="light"] .theme-option:hover {
+  background: rgba(0, 0, 0, var(--opacity-3, 0.03));
+}
+
+[data-theme="light"] .theme-option.active {
+  background: rgba(79, 127, 78, var(--opacity-8, 0.08));
+  border-color: rgba(79, 127, 78, var(--opacity-20, 0.2));
+}
+
+[data-theme="light"] .theme-option-name {
+  color: var(--color-text-primary, rgba(33, 33, 33, 0.9));
+}
+
+[data-theme="light"] .theme-option-description {
+  color: var(--color-text-secondary, rgba(33, 33, 33, 0.6));
+}

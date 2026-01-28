@@ -5,13 +5,14 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: var(--color-neutral-900, #212121);
+  background: var(--color-background-base);
   position: relative;
   overflow: hidden;
   padding: var(--spacing-4, 16px);
+  transition: background-color 0.3s ease;
 }
 
-/* Subtle animated background */
+/* Subtle animated background overlay - on top of background image */
 .login-container::before {
   content: '';
   position: absolute;
@@ -22,9 +23,44 @@
   background: 
     radial-gradient(circle at 25% 35%, var(--color-brand-primary-500, #4f7f4e) 0%, transparent 35%),
     radial-gradient(circle at 75% 65%, var(--color-brand-secondary-500, #e9b85b) 0%, transparent 35%);
-  opacity: var(--opacity-6, 0.06);
+  opacity: 0.06;
   animation: backgroundPulse 25s ease-in-out infinite;
   pointer-events: none;
+  z-index: 1;
+  /* Add overlay to fade the background image */
+  background-color: rgba(33, 33, 33, 0.5);
+  background-blend-mode: overlay;
+}
+
+[data-theme="light"] .login-container::before {
+  background-color: rgba(250, 250, 250, 0.15); /* Reduced overlay opacity to make background more visible */
+}
+
+/* Background image layer - blurred and faded, under the dark background */
+.login-container::after {
+  content: '';
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  width: 120%;
+  height: 120%;
+  background-image: var(--login-bg-image, url('../assets/dashboard-background.png'));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(4px) brightness(0.4) saturate(0);
+  opacity: 0.7;
+  z-index: 0;
+  pointer-events: none;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+[data-theme="light"] .login-container::after {
+  filter: blur(7px) brightness(1) saturate(1.0); /* Match dashboard light mode settings */
+  opacity: 0.7; /* Match dashboard opacity */
 }
 
 @keyframes backgroundPulse {
@@ -53,6 +89,7 @@
   position: relative;
   z-index: 1;
   animation: slideUpFade var(--duration-slower, 500ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
+  opacity: 0.95; /* Slightly transparent to see background through */
 }
 
 @keyframes slideUpFade {
@@ -98,12 +135,13 @@
 
 .login-card h2 {
   margin: 0 0 var(--spacing-5, 20px) 0;
-  color: rgba(255, 255, 255, var(--opacity-50, 0.5));
+  color: var(--color-text-secondary);
   font-size: var(--font-size-base, 16px);
   font-weight: var(--font-weight-regular, 400);
   text-align: center;
   letter-spacing: var(--font-letter-spacing-normal, 0);
   text-transform: uppercase;
+  transition: color 0.3s ease;
 }
 
 .form-group {
@@ -123,11 +161,11 @@
 .form-group .login-input input {
   width: 100%;
   padding: var(--spacing-4, 16px) var(--spacing-6, 24px);
-  background: rgba(255, 255, 255, var(--opacity-5, 0.05));
-  border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-20, 0.2));
+  background: var(--color-background-card);
+  border: var(--border-width-thin, 1px) solid var(--color-border-default);
   border-radius: var(--border-radius-md, 8px);
   font-size: var(--font-size-base, 16px);
-  color: var(--color-neutral-white, #ffffff);
+  color: var(--color-text-primary);
   transition: all var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
   backdrop-filter: blur(10px);
   appearance: none;
@@ -136,13 +174,13 @@
 }
 
 .form-group .login-input input::placeholder {
-  color: rgba(255, 255, 255, var(--opacity-30, 0.3));
+  color: var(--color-text-tertiary);
 }
 
 .form-group .login-input input:focus {
   outline: none;
   border-color: var(--color-brand-primary-500, #4f7f4e);
-  background: rgba(255, 255, 255, var(--opacity-8, 0.08));
+  background: var(--color-background-elevated);
   transform: translateY(-1px);
 }
 
@@ -163,32 +201,32 @@
 }
 
 .form-group .ode-input label {
-  color: rgba(255, 255, 255, var(--opacity-70, 0.7)) !important;
+  color: var(--color-text-secondary) !important;
   margin-bottom: var(--spacing-1, 4px) !important;
 }
 
 .form-group .ode-input input {
-  background: rgba(255, 255, 255, var(--opacity-5, 0.05)) !important;
-  border: var(--border-width-thin, 1px) solid rgba(79, 127, 78, var(--opacity-20, 0.2)) !important;
-  color: var(--color-neutral-white, #ffffff) !important;
+  background: var(--color-background-card) !important;
+  border: var(--border-width-thin, 1px) solid var(--color-border-default) !important;
+  color: var(--color-text-primary) !important;
   backdrop-filter: blur(10px);
   padding: var(--spacing-3, 12px) var(--spacing-4, 16px) !important;
 }
 
 .form-group .ode-input input:focus {
   border-color: var(--color-brand-primary-500, #4f7f4e) !important;
-  background: rgba(255, 255, 255, var(--opacity-8, 0.08)) !important;
+  background: var(--color-background-elevated) !important;
 }
 
 .form-group .ode-input input::placeholder {
-  color: rgba(255, 255, 255, var(--opacity-30, 0.3)) !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 /* Error message with refined styling */
 .error-message {
   background: rgba(244, 67, 54, var(--opacity-15, 0.15));
   border: var(--border-width-thin, 1px) solid rgba(244, 67, 54, var(--opacity-30, 0.3));
-  color: var(--color-semantic-error-50, #fef2f2);
+  color: var(--color-semantic-error-500, #F44336);
   padding: var(--spacing-4, 16px) var(--spacing-6, 24px);
   border-radius: var(--border-radius-md, 8px);
   margin-bottom: var(--spacing-6, 24px);
@@ -196,6 +234,11 @@
   font-size: var(--font-size-sm, 14px);
   backdrop-filter: blur(10px);
   animation: slideDown var(--duration-normal, 250ms) var(--easing-ease-out, cubic-bezier(0, 0, 0.2, 1));
+}
+
+[data-theme="light"] .error-message {
+  background: var(--color-semantic-error-50, #FEF2F2);
+  color: var(--color-semantic-error-600, #DC2626);
 }
 
 @keyframes slideDown {

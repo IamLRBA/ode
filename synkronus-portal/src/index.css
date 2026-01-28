@@ -5,15 +5,59 @@
   box-sizing: border-box;
 }
 
+/* Theme-aware CSS Variables */
+:root {
+  /* Dark theme (default) */
+  --color-background-base: var(--color-neutral-900, #212121);
+  --color-background-elevated: #2A2A2A;
+  --color-background-overlay: #1A1A1A;
+  --color-background-card: rgba(255, 255, 255, 0.05);
+  --color-text-primary: rgba(255, 255, 255, 0.9);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-tertiary: rgba(255, 255, 255, 0.4);
+  --color-text-disabled: rgba(255, 255, 255, 0.3);
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --color-background-base: var(--color-neutral-50, #FAFAFA);
+  --color-background-elevated: var(--color-neutral-white, #FFFFFF);
+  --color-background-overlay: var(--color-neutral-100, #F5F5F5);
+  --color-background-card: rgba(0, 0, 0, 0.02);
+  --color-text-primary: rgba(33, 33, 33, 0.9);
+  --color-text-secondary: rgba(33, 33, 33, 0.6);
+  --color-text-tertiary: rgba(33, 33, 33, 0.4);
+  --color-text-disabled: rgba(33, 33, 33, 0.3);
+  --color-border-default: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.12);
+}
+
+/* Dark theme (explicit) */
+[data-theme="dark"] {
+  --color-background-base: var(--color-neutral-900, #212121);
+  --color-background-elevated: #2A2A2A;
+  --color-background-overlay: #1A1A1A;
+  --color-background-card: rgba(255, 255, 255, 0.05);
+  --color-text-primary: rgba(255, 255, 255, 0.9);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-tertiary: rgba(255, 255, 255, 0.4);
+  --color-text-disabled: rgba(255, 255, 255, 0.3);
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+}
+
 body {
   font-family: var(--font-family-sans, system-ui, -apple-system, sans-serif);
   line-height: var(--font-line-height-normal, 1.5);
-  color: var(--color-neutral-900, #212121);
-  background-color: var(--color-neutral-900, #212121);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-base);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
