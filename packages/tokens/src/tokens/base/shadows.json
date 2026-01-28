@@ -6,7 +6,25 @@
     "md": { "value": "0 4px 6px -1px rgba(0,0,0,0.1)" },
     "lg": { "value": "0 10px 15px -3px rgba(0,0,0,0.1)" },
     "xl": { "value": "0 20px 25px -5px rgba(0,0,0,0.1)" },
-    "2xl": { "value": "0 25px 50px -12px rgba(0,0,0,0.25)" }
+    "2xl": { "value": "0 25px 50px -12px rgba(0,0,0,0.25)" },
+    "portal": {
+      "sm": { "value": "0 2px 8px rgba(0,0,0,0.2)" },
+      "md": { "value": "0 4px 16px rgba(0,0,0,0.3)" },
+      "lg": { "value": "0 8px 32px rgba(0,0,0,0.4)" },
+      "xs": { "value": "0 2px 8px var(--color-neutral-black-alpha-20)" },
+      "focus-ring": { "value": "0 0 0 3px var(--color-brand-primary-alpha-20)" },
+      "header-scrolled": { "value": "0 4px 24px var(--color-neutral-black-alpha-15), inset 0 1px 0 var(--color-neutral-black-alpha-5)" },
+      "card": { "value": "0 8px 32px var(--color-neutral-black-alpha-40), inset 0 1px 0 var(--color-neutral-white-alpha-5)" },
+      "card-light": { "value": "0 8px 32px var(--color-neutral-black-alpha-10), inset 0 1px 0 var(--color-neutral-white-alpha-5)" },
+      "lg-light": { "value": "0 8px 32px var(--color-neutral-black-alpha-10)" },
+      "modal": { "value": "0 12px 40px var(--color-neutral-black-alpha-40), 0 0 0 1px var(--color-brand-primary-alpha-30), inset 0 1px 0 var(--color-neutral-white-alpha-10)" },
+      "modal-light": { "value": "0 12px 40px var(--color-neutral-black-alpha-20), 0 0 0 1px var(--color-brand-primary-alpha-50), inset 0 1px 0 var(--color-neutral-black-alpha-5)" },
+      "dropdown": { "value": "0 2px 8px var(--color-neutral-black-alpha-8)" },
+      "dropdown-light": { "value": "0 2px 8px var(--color-neutral-black-alpha-8), inset 0 1px 0 var(--color-neutral-black-alpha-3)" },
+      "role-error": { "value": "0 2px 12px var(--color-semantic-error-alpha-30)" },
+      "role-success": { "value": "0 2px 12px var(--color-semantic-success-alpha-30)" },
+      "role-info": { "value": "0 2px 12px var(--color-semantic-info-alpha-20)" }
+    }
   }
 }
 

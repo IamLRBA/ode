@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { Button, Input } from "@ode/components/react-web";
 
 import odeLogo from '../assets/ode_logo.png'
+import dashboardBackgroundDark from '../assets/dashboard-background.png'
+import dashboardBackgroundLight from '../assets/dashboard-background-light.png'
 import './Login.css'
 
 export function Login() {
@@ -12,6 +15,9 @@ export function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
+  const { resolvedTheme } = useTheme()
+  
+  const loginBackground = resolvedTheme === 'light' ? dashboardBackgroundLight : dashboardBackgroundDark
 
   const handleSubmit = async (e?: FormEvent) => {
     if (e) {
@@ -30,7 +36,7 @@ export function Login() {
   }
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ '--login-bg-image': `url(${loginBackground})` } as React.CSSProperties}>
       <div className="login-card">
         <div className="login-logo-section">
           <img src={odeLogo} alt="ODE Logo" className="login-logo" />
