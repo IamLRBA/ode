@@ -25,7 +25,141 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 Instead, please report them via one of the following methods:
 
 1. **Email**: Send details to `security@opendataensemble.org`
+   
+   For encrypted communication, you can use our PGP public key (see below).
+
 2. **GitHub Security Advisory**: Use GitHub's [private vulnerability reporting](https://github.com/opendataensemble/ode/security/advisories/new) feature
+
+### PGP Public Key
+
+For encrypted email communication, use our PGP public key:
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+l0uurTOA9d+hIJbzDg/AIM4=
+=zyVP
+-----END PGP PUBLIC KEY BLOCK-----
+```
+
+**Key ID**: `5DD7CEA7D609F145`  
+**Email**: `security@opendataensemble.org`
+
+### How to Use GPG for Encrypted Email
+
+To send an encrypted security report, follow these steps:
+
+#### Step 1: Install GPG
+
+- **macOS**: `brew install gnupg` or download from [GPG Suite](https://gpgtools.org/)
+- **Linux**: Usually pre-installed, or install with `sudo apt install gnupg` (Debian/Ubuntu) or `sudo yum install gnupg` (RHEL/CentOS)
+- **Windows**: Download from [Gpg4win](https://www.gpg4win.org/)
+
+#### Step 2: Import Our Public Key
+
+1. Save the public key block above to a file (e.g., `ode-public-key.asc`)
+2. Import it into your GPG keyring:
+   ```bash
+   gpg --import ode-public-key.asc
+   ```
+3. Verify the key was imported:
+   ```bash
+   gpg --list-keys security@opendataensemble.org
+   ```
+
+#### Step 3: Encrypt Your Message
+
+**Option A: Encrypt a text file**
+```bash
+# Create your report file
+echo "Your security report details here..." > report.txt
+
+# Encrypt it
+gpg --encrypt --armor --recipient security@opendataensemble.org report.txt
+```
+
+This creates `report.txt.asc` - copy the contents of this file into your email.
+
+**Option B: Encrypt directly from command line**
+```bash
+echo "Your security report details here..." | gpg --encrypt --armor --recipient security@opendataensemble.org > encrypted_report.asc
+```
+
+**Option C: Using your email client**
+
+Many email clients (Thunderbird with Enigmail, Mail.app with GPG Suite, etc.) can encrypt emails automatically once you have the recipient's public key imported.
+
+#### Step 4: Send the Encrypted Message
+
+1. Copy the entire encrypted message block (including `-----BEGIN PGP MESSAGE-----` and `-----END PGP MESSAGE-----`)
+2. Paste it into the body of your email to `security@opendataensemble.org`
+3. Send the email (the subject line can remain unencrypted)
+
+#### Quick Example
+
+```bash
+# 1. Import the key
+gpg --import ode-public-key.asc
+
+# 2. Encrypt your message
+echo "Security vulnerability details..." | gpg --encrypt --armor -r security@opendataensemble.org > message.asc
+
+# 3. Copy the contents of message.asc and paste into your email
+cat message.asc
+```
+
+#### Troubleshooting
+
+- **"No public key" error**: Make sure you imported the key correctly with `gpg --import`
+- **"Key not found" error**: Try using the email address: `gpg --encrypt --armor -r security@opendataensemble.org`
+- **Need help?**: If you're having trouble with GPG, you can send an unencrypted email, but we strongly recommend using encryption for sensitive security reports.
 
 ### What to Include
 
@@ -295,7 +429,7 @@ We appreciate security research that helps make ODE more secure. If you're condu
 For security-related questions or concerns:
 
 - **Security Email**: `security@opendataensemble.org`
-- **General Contact**: `hello@sapiens-solutions.com`
+
 - **Website**: https://opendataensemble.org
 
 ## Acknowledgments
