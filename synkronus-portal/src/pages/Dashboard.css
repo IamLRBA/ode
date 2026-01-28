@@ -68,7 +68,7 @@ html::-webkit-scrollbar-thumb:hover {
   background: var(--color-semantic-ui-scrollbar-thumb-hover);
 }
 
-/* Subtle animated background overlay - on top of background image */
+/* Subtle overlay - on top of background image (no gradient) */
 .dashboard::before {
   content: '';
   position: fixed;
@@ -76,15 +76,9 @@ html::-webkit-scrollbar-thumb:hover {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: 
-    radial-gradient(circle at 25% 35%, var(--color-brand-primary-500) 0%, transparent 35%),
-    radial-gradient(circle at 75% 65%, var(--color-brand-secondary-500) 0%, transparent 35%);
-  opacity: 0.06;
-  animation: backgroundPulse 25s ease-in-out infinite;
+  background-color: var(--color-semantic-ui-overlay-dark);
   pointer-events: none;
   z-index: 1;
-  background-color: var(--color-semantic-ui-overlay-dark);
-  background-blend-mode: overlay;
 }
 
 [data-theme="light"] .dashboard::before {
@@ -106,7 +100,7 @@ html::-webkit-scrollbar-thumb:hover {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  filter: blur(var(--filter-blur-4)) brightness(0.2) saturate(0);
+  filter: blur(var(--filter-blur-2)) brightness(0.5) saturate(0);
   opacity: var(--opacity-70);
   z-index: 0;
   pointer-events: none;
@@ -117,68 +111,6 @@ html::-webkit-scrollbar-thumb:hover {
 [data-theme="light"] .dashboard::after {
   filter: blur(var(--filter-blur-4)) brightness(1) saturate(1);
   opacity: var(--opacity-70);
-}
-
-/* Gold circle 1 - moved to separate div */
-.dashboard .gold-circle-1 {
-  position: fixed;
-  top: 15%;
-  left: 8%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--color-brand-secondary-500) 0%, transparent 75%);
-  opacity: 0.10;
-  filter: blur(var(--filter-blur-100));
-  pointer-events: none;
-  z-index: 1;
-  animation: goldCircleFloat1 30s ease-in-out infinite;
-}
-
-.dashboard .gold-circle-2 {
-  position: fixed;
-  bottom: 10%;
-  right: 10%;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, var(--color-brand-secondary-500) 0%, transparent 75%);
-  opacity: 0.08;
-  filter: blur(var(--filter-blur-110));
-  pointer-events: none;
-  z-index: 1;
-  animation: goldCircleFloat2 35s ease-in-out infinite;
-}
-
-@keyframes goldCircleFloat1 {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1);
-    opacity: 0.10;
-  }
-  50% { 
-    transform: translate(40px, -30px) scale(1.15);
-    opacity: 0.14;
-  }
-}
-
-@keyframes goldCircleFloat2 {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1);
-    opacity: 0.08;
-  }
-  50% { 
-    transform: translate(-35px, 35px) scale(1.20);
-    opacity: 0.12;
-  }
-}
-
-@keyframes backgroundPulse {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1);
-    opacity: 0.06;
-  }
-  50% { 
-    transform: translate(3%, 3%) scale(1.05);
-    opacity: 0.08;
-  }
 }
 
 /* Header - Minimal Futuristic Design */
@@ -1525,16 +1457,10 @@ html::-webkit-scrollbar-thumb:hover {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 50%, var(--color-brand-primary-500) 100%);
+  background: var(--color-brand-primary-500);
   border-radius: var(--border-radius-sm);
   transition: width var(--duration-normal) var(--easing-ease-in-out);
   box-shadow: 0 0 10px var(--color-brand-primary-alpha-50);
-  animation: progressShimmer 2s ease-in-out infinite;
-}
-
-@keyframes progressShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
 }
 
 .progress-text {
@@ -1944,12 +1870,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 .bundle-card:hover .bundle-icon {
   transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(var(--filter-drop-shadow-secondary-md));
-}
-
-/* Add subtle gold accent to bundle cards */
-.bundle-card:nth-child(even)::before {
-  background: linear-gradient(90deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 100%);
+  filter: drop-shadow(var(--filter-drop-shadow-brand-sm));
 }
 
 .bundle-info {
@@ -2137,7 +2058,7 @@ html::-webkit-scrollbar-thumb:hover {
   background: var(--color-neutral-white-alpha-2);
   backdrop-filter: blur(var(--filter-blur-40)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--filter-blur-40)) saturate(180%);
-  border-radius: 20px;
+  border-radius: var(--border-radius-2xl);
   border: var(--border-width-thin) solid var(--color-brand-primary-alpha-20);
   box-shadow: 
     0 4px 16px var(--color-neutral-black-alpha-15),
@@ -2148,19 +2069,23 @@ html::-webkit-scrollbar-thumb:hover {
   max-width: 1000px;
   margin: 0 auto;
   margin-top: var(--spacing-8);
-  padding: var(--spacing-6);
+  padding: 0;
 }
 
-/* Unified Search Bar Styles for Users and Observations */
+/* Search bar = top of container; same top radii, full width */
 .users-table-container .search-bar,
 .observations-table-container .search-bar {
   display: flex;
   gap: var(--spacing-2);
-  margin-bottom: var(--spacing-6);
-  align-items: center;
-  padding: 0;
+  margin: 0;
+  align-items: stretch;
+  padding: var(--spacing-3) 0;
   width: 100%;
   max-width: 100% !important;
+  border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0;
+  border-bottom: var(--border-width-thin) solid var(--color-brand-primary-alpha-20);
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .users-table-container .search-input-wrapper,
@@ -2171,6 +2096,7 @@ html::-webkit-scrollbar-thumb:hover {
   align-items: center;
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0;
 }
 
 .users-table-container .search-input,
@@ -2189,16 +2115,19 @@ html::-webkit-scrollbar-thumb:hover {
   display: block !important;
 }
 
-/* Base inactive state for search inputs - dark background, light text, with border radii */
+/* Search input = top of container; same top radii as container, full width */
 .users-table-container .search-input input,
 .observations-table-container .search-input input,
 .users-table-container .ode-input input,
 .observations-table-container .ode-input input {
   padding-right: var(--spacing-16) !important;
   padding-left: var(--spacing-5) !important;
-  border-radius: 20px 20px 0 0 !important;
-  background: var(--color-semantic-ui-input-fill-dark) !important;
+  padding-top: var(--spacing-3) !important;
+  padding-bottom: var(--spacing-3) !important;
+  border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0 !important;
   border: var(--border-width-thin) solid var(--color-brand-primary-alpha-20) !important;
+  border-bottom: none !important;
+  background: var(--color-semantic-ui-input-fill-dark) !important;
   color: var(--color-neutral-white) !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -2206,42 +2135,6 @@ html::-webkit-scrollbar-thumb:hover {
   box-sizing: border-box !important;
 }
 
-/* Focus state - 2px border with top border radii only when clicked/focused */
-.users-table-container .search-input input:focus,
-.observations-table-container .search-input input:focus,
-.users-table-container .ode-input input:focus,
-.observations-table-container .ode-input input:focus,
-.users-table-container .search-input input:focus-visible,
-.observations-table-container .search-input input:focus-visible,
-.users-table-container .ode-input input:focus-visible,
-.observations-table-container .ode-input input:focus-visible {
-  border: 2px solid var(--color-brand-primary-500) !important;
-  border-radius: 20px 20px 0 0 !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  box-shadow: var(--shadow-portal-focus-ring) !important;
-  outline: none !important;
-  background: var(--color-semantic-ui-input-fill-dark) !important;
-}
-
-/* Base inactive state for search inputs - dark background, light text, with border radii */
-.users-table-container .search-input input,
-.observations-table-container .search-input input,
-.users-table-container .ode-input input,
-.observations-table-container .ode-input input {
-  padding-right: var(--spacing-16) !important;
-  padding-left: var(--spacing-5) !important;
-  border-radius: 20px 20px 0 0 !important;
-  background: var(--color-semantic-ui-input-fill-dark) !important;
-  border: var(--border-width-thin) solid var(--color-brand-primary-alpha-20) !important;
-  color: var(--color-neutral-white) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  font-size: var(--font-size-base) !important;
-  box-sizing: border-box !important;
-}
-
-/* Focus state - 2px border with top border radii only when clicked/focused - using border shorthand to override inline styles */
 .users-table-container .search-input input:focus,
 .observations-table-container .search-input input:focus,
 .users-table-container .ode-input input:focus,
@@ -2254,22 +2147,22 @@ html::-webkit-scrollbar-thumb:hover {
 .observations-table-container .search-input:focus-within input,
 .users-table-container .ode-input:focus-within input,
 .observations-table-container .ode-input:focus-within input {
-  border: 2px solid var(--color-brand-primary-500) !important;
-  border-radius: 20px 20px 0 0 !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+  border: var(--border-width-medium) solid var(--color-brand-primary-500) !important;
+  border-bottom: none !important;
+  border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0 !important;
   box-shadow: var(--shadow-portal-focus-ring) !important;
   outline: none !important;
   background: var(--color-semantic-ui-input-fill-dark) !important;
 }
 
-/* Ensure focus state works even with Input component's inline styles */
 .users-table-container .search-input input[style*="border"],
 .observations-table-container .search-input input[style*="border"],
 .users-table-container .ode-input input[style*="border"],
 .observations-table-container .ode-input input[style*="border"] {
   border-color: var(--color-brand-primary-alpha-20) !important;
   border-width: var(--border-width-thin) !important;
+  border-bottom: none !important;
+  border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0 !important;
 }
 
 .users-table-container .search-input input[style*="border"]:focus,
@@ -2284,10 +2177,9 @@ html::-webkit-scrollbar-thumb:hover {
 .observations-table-container .search-input:focus-within input[style*="border"],
 .users-table-container .ode-input:focus-within input[style*="border"],
 .observations-table-container .ode-input:focus-within input[style*="border"] {
-  border: 2px solid var(--color-brand-primary-500) !important;
-  border-radius: 20px 20px 0 0 !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+  border: var(--border-width-medium) solid var(--color-brand-primary-500) !important;
+  border-bottom: none !important;
+  border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0 !important;
   box-shadow: var(--shadow-portal-focus-ring) !important;
 }
 
@@ -2444,7 +2336,7 @@ html::-webkit-scrollbar-thumb:hover {
   width: var(--avatar-md);
   height: var(--avatar-md);
   border-radius: var(--border-radius-full);
-  background: linear-gradient(135deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 50%, var(--color-brand-primary-500) 100%);
+  background: var(--color-brand-primary-500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2452,7 +2344,7 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: var(--font-weight-bold);
   color: var(--color-neutral-white);
   flex-shrink: 0;
-  border: var(--border-width-thin) solid var(--color-brand-secondary-alpha-30);
+  border: var(--border-width-thin) solid var(--color-brand-primary-alpha-30);
 }
 
 .user-name {
@@ -2506,28 +2398,29 @@ html::-webkit-scrollbar-thumb:hover {
   height: var(--icon-size-sm);
 }
 
+.reset-password-btn {
+  border-color: var(--color-brand-primary-alpha-20);
+}
+
 .reset-password-btn:hover:not(:disabled) {
   background: var(--color-brand-primary-alpha-20);
   border-color: var(--color-brand-primary-500);
   color: var(--color-brand-primary-300);
+  box-shadow: 0 0 8px var(--color-brand-primary-alpha-30);
 }
-
-/* Add subtle gold accent to reset password button */
-.reset-password-btn {
-  border-color: var(--color-brand-secondary-alpha-20);
-}
-
-.reset-password-btn:hover:not(:disabled) {
-  border-color: var(--color-brand-secondary-500);
-  box-shadow: 0 0 8px var(--color-brand-secondary-alpha-30);
-}
-
-.delete-btn 
 
 .delete-btn:hover:not(:disabled) {
   background: var(--color-semantic-error-alpha-30) !important;
   border-color: var(--color-semantic-error-500) !important;
   color: var(--color-semantic-error-500) !important;
+}
+
+/* User Management Delete – same hover as navbar Logout (dark) */
+.users-section .delete-btn:hover:not(:disabled) {
+  background: var(--color-semantic-error-alpha-30) !important;
+  border: var(--border-width-thin) solid var(--color-semantic-error-500) !important;
+  color: var(--color-semantic-error-500) !important;
+  transform: translateY(-1px);
 }
 
 .view-btn 
@@ -2547,7 +2440,7 @@ html::-webkit-scrollbar-thumb:hover {
   background: var(--color-neutral-white-alpha-2);
   backdrop-filter: blur(var(--filter-blur-40)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--filter-blur-40)) saturate(180%);
-  border-radius: 20px;
+  border-radius: var(--border-radius-2xl);
   border: var(--border-width-thin) solid var(--color-brand-primary-alpha-20);
   width: 100%;
   max-width: 1000px;
@@ -2558,7 +2451,7 @@ html::-webkit-scrollbar-thumb:hover {
     inset 0 1px 0 var(--color-neutral-white-alpha-5);
   overflow: hidden;
   overflow-x: auto;
-  padding: var(--spacing-6);
+  padding: 0;
 }
 
 
@@ -2611,8 +2504,22 @@ html::-webkit-scrollbar-thumb:hover {
   width: 100%;
 }
 
+/* Table section = area below search; full width, border-top, padding */
+.users-table-section,
+.observations-table-section {
+  width: 100%;
+  border-top: var(--border-width-thin) solid var(--color-brand-primary-alpha-20);
+  padding: var(--spacing-6);
+  box-sizing: border-box;
+}
+
 .table-container {
   overflow-x: auto;
+  width: 100%;
+  margin-top: var(--spacing-4);
+  border: var(--border-width-thin) solid var(--color-brand-primary-alpha-15);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-neutral-white-alpha-5);
 }
 
 /* Custom scrollbar for table container */
@@ -2874,7 +2781,6 @@ html::-webkit-scrollbar-thumb:hover {
 .info-icon {
   font-size: var(--font-size-3xl);
   flex-shrink: 0;
-  filter: drop-shadow(var(--filter-drop-shadow-brand-sm));
   transition: transform var(--duration-normal) var(--easing-ease-out);
   display: flex;
   align-items: center;
@@ -2889,21 +2795,15 @@ html::-webkit-scrollbar-thumb:hover {
 
 .info-card:hover .info-icon {
   transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(var(--filter-drop-shadow-secondary-md));
-}
-
-/* Add gold accent to specific info icons - only in dark mode */
-.info-card:nth-child(even) .info-icon {
-  color: var(--color-brand-secondary-400);
-}
-
-/* Remove gold icons in light mode - make them all same dark color */
-[data-theme="light"] .info-card:nth-child(even) .info-icon {
-  color: var(--color-brand-primary-500);
 }
 
 [data-theme="light"] .info-icon {
   color: var(--color-brand-primary-500);
+  filter: drop-shadow(var(--filter-drop-shadow-brand-sm));
+}
+
+[data-theme="light"] .info-card:hover .info-icon {
+  filter: drop-shadow(var(--filter-drop-shadow-brand-md));
 }
 
 .info-content {
@@ -2955,11 +2855,11 @@ html::-webkit-scrollbar-thumb:hover {
   bottom: 0;
   background: var(--color-neutral-black-alpha-80);
   backdrop-filter: blur(var(--filter-blur-10));
-  z-index: 10000;
+  z-index: 10002;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: var(--spacing-4);
+  padding: 96px var(--spacing-4) var(--spacing-4);
   animation: fadeIn var(--duration-normal) var(--easing-ease-out);
 }
 
@@ -2972,7 +2872,7 @@ html::-webkit-scrollbar-thumb:hover {
   position: relative;
   z-index: 10001;
   background: var(--color-neutral-900-alpha-95);
-  backdrop-filter: blur(40px);
+  backdrop-filter: blur(var(--filter-blur-40));
   border-radius: var(--border-radius-xl);
   border: var(--border-width-thin) solid var(--color-neutral-white-alpha-10);
   box-shadow: var(--shadow-2xl);
@@ -2981,6 +2881,28 @@ html::-webkit-scrollbar-thumb:hover {
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUpModal var(--duration-normal) var(--easing-ease-out);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-semantic-ui-scrollbar-thumb) var(--color-semantic-ui-scrollbar-track);
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: var(--color-semantic-ui-scrollbar-track);
+  border-radius: var(--border-radius-sm);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--color-semantic-ui-scrollbar-thumb);
+  border-radius: var(--border-radius-sm);
+  transition: background var(--duration-fast) var(--easing-ease-out);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-semantic-ui-scrollbar-thumb-hover);
 }
 
 @keyframes slideUpModal {
@@ -2995,7 +2917,142 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .modal-content.modal-large {
-  max-width: 900px;
+  max-width: 720px;
+  max-height: calc(100vh - 96px - var(--spacing-8));
+}
+
+.modal-content.modal-create-user {
+  max-width: 380px;
+}
+
+.modal-create-user .modal-header {
+  padding: var(--spacing-2) var(--spacing-3);
+  padding-bottom: var(--spacing-1);
+}
+
+.modal-create-user .modal-header h2 {
+  font-size: var(--font-size-lg);
+}
+
+.modal-create-user .modal-form {
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  padding-top: var(--spacing-1);
+}
+
+.modal-create-user .form-group {
+  gap: var(--spacing-1);
+}
+
+.modal-create-user .form-group label {
+  margin-bottom: 0;
+  font-size: var(--font-size-xs);
+}
+
+.modal-create-user .modal-actions {
+  margin-top: var(--spacing-1);
+  padding: var(--spacing-3);
+  gap: var(--spacing-2);
+}
+
+.modal-create-user .modal-actions button {
+  padding: var(--spacing-2) var(--spacing-4);
+  transition: all var(--duration-normal) var(--easing-ease-out);
+}
+
+.modal-create-user .modal-actions button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500) !important;
+  color: var(--color-neutral-white) !important;
+  border-color: var(--color-brand-primary-500) !important;
+  transform: translateY(-1px);
+}
+
+.modal-create-user .modal-actions button:disabled {
+  opacity: var(--opacity-50);
+  cursor: not-allowed;
+  transform: none;
+}
+
+[data-theme="light"] .modal-create-user .modal-actions button:hover:not(:disabled) {
+  background: var(--color-brand-primary-500) !important;
+  color: var(--color-neutral-white) !important;
+  border-color: var(--color-brand-primary-500) !important;
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .modal-create-user .modal-actions button:hover:not(:disabled) span,
+[data-theme="light"] .modal-create-user .modal-actions button:hover:not(:disabled) *,
+[data-theme="light"] .modal-create-user .modal-actions button:hover:not(:disabled) svg,
+[data-theme="light"] .modal-create-user .modal-actions button:hover:not(:disabled) svg * {
+  color: var(--color-neutral-white) !important;
+}
+
+.modal-create-user .role-select-button {
+  padding: var(--spacing-2) var(--spacing-3);
+  min-height: 34px;
+}
+
+.modal-create-user .role-dropdown-menu {
+  top: auto;
+  bottom: calc(100% + var(--spacing-1));
+  max-height: 140px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-semantic-ui-scrollbar-thumb) var(--color-semantic-ui-scrollbar-track);
+  animation: slideUpRoleMenu var(--duration-normal) var(--easing-ease-out);
+}
+
+@keyframes slideUpRoleMenu {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-create-user .role-dropdown-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-create-user .role-dropdown-menu::-webkit-scrollbar-track {
+  background: var(--color-semantic-ui-scrollbar-track);
+  border-radius: var(--border-radius-sm);
+}
+
+.modal-create-user .role-dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--color-semantic-ui-scrollbar-thumb);
+  border-radius: var(--border-radius-sm);
+}
+
+.modal-create-user .role-option {
+  padding: var(--spacing-1) var(--spacing-2);
+  min-height: unset;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+}
+
+.modal-create-user .role-option .role-description {
+  display: none;
+}
+
+.modal-create-user .role-option .role-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.modal-create-user .role-option:hover {
+  padding-left: var(--spacing-3);
+}
+
+.modal-create-user .modal-input input,
+.modal-create-user .ode-input input {
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  min-height: 38px;
 }
 
 .modal-header {
@@ -3587,7 +3644,7 @@ html::-webkit-scrollbar-thumb:hover {
   width: var(--avatar-xl);
   height: var(--avatar-xl);
   border-radius: var(--border-radius-full);
-  background: linear-gradient(135deg, var(--color-brand-primary-500) 0%, var(--color-brand-secondary-500) 50%, var(--color-brand-primary-500) 100%);
+  background: var(--color-brand-primary-500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3595,8 +3652,8 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: var(--font-weight-bold);
   color: var(--color-neutral-white);
   flex-shrink: 0;
-  border: var(--border-width-medium) solid var(--color-brand-secondary-alpha-40);
-  box-shadow: 0 0 20px var(--color-brand-secondary-alpha-20);
+  border: var(--border-width-medium) solid var(--color-brand-primary-alpha-40);
+  box-shadow: 0 0 20px var(--color-brand-primary-alpha-20);
 }
 
 .user-info h3 {
@@ -4024,10 +4081,6 @@ html::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-primary-alpha-5);
 }
 
-[data-theme="light"] .bundle-card:nth-child(even) {
-  background: var(--color-brand-secondary-alpha-20);
-}
-
 
 /* Section container backgrounds - different shades in light mode to create depth */
 [data-theme="light"] .app-bundles-section {
@@ -4069,6 +4122,31 @@ html::-webkit-scrollbar-thumb:hover {
   background: var(--color-neutral-black-alpha-5);
   border-color: var(--color-brand-primary-alpha-15);
   border: var(--border-width-thin) solid var(--color-brand-primary-alpha-15);
+  box-shadow: var(--shadow-portal-dropdown) !important;
+}
+
+[data-theme="light"] .users-table-container .search-bar,
+[data-theme="light"] .observations-table-container .search-bar {
+  border-bottom-color: var(--color-border-default);
+}
+
+[data-theme="light"] .users-table-section,
+[data-theme="light"] .observations-table-section {
+  border-top-color: var(--color-border-default);
+}
+
+[data-theme="light"] .users-table-container .table-container,
+[data-theme="light"] .observations-table-container .table-container {
+  border-color: var(--color-border-default);
+  background: var(--color-background-card);
+}
+
+/* Hide table container when empty state is shown */
+.users-table-section:has(.user-search-empty) .table-container,
+.users-table-section:has(.users-empty-state) .table-container,
+.observations-table-section:has(.observation-search-empty) .table-container,
+.observations-table-section:has(.observations-empty-state) .table-container {
+  display: none;
 }
 
 [data-theme="light"] .data-export-section {
@@ -4396,17 +4474,17 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--color-neutral-600) !important; /* Same color as border */
 }
 
-/* Delete button icon - keep as is (don't change icon color) */
+/* User Management Delete – same hover as navbar Logout (light) */
 [data-theme="light"] .users-section .delete-btn:hover:not(:disabled) {
-  background: var(--color-semantic-error-alpha-30) !important;
-  border-color: var(--color-semantic-error-500) !important;
-  color: var(--color-semantic-error-500) !important;
+  background: var(--color-semantic-error-alpha-15) !important;
+  border: var(--border-width-thin) solid var(--color-semantic-error-500) !important;
+  color: var(--color-semantic-error-600) !important;
+  transform: translateY(-1px);
 }
 
-/* Delete button icon - red on hover */
 [data-theme="light"] .users-section .delete-btn:hover:not(:disabled) svg,
 [data-theme="light"] .users-section .delete-btn:hover:not(:disabled) svg * {
-  color: var(--color-semantic-error-500) !important; /* Red icon on hover */
+  color: var(--color-semantic-error-600) !important;
 }
 
 /* Other pages delete button - keep existing style */
@@ -4422,8 +4500,8 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* Reset Password button - Users page only, light mode */
 [data-theme="light"] .users-section .reset-password-btn {
-  color: var(--color-neutral-600) !important; /* Same color as border */
-  border-color: var(--color-brand-secondary-alpha-20) !important;
+  color: var(--color-neutral-600) !important;
+  border-color: var(--color-brand-primary-alpha-20) !important;
 }
 
 /* Reset Password button icon - keep as is (don't change icon color) */
@@ -4442,14 +4520,14 @@ html::-webkit-scrollbar-thumb:hover {
 /* Other pages reset password button - keep existing style */
 [data-theme="light"] .reset-password-btn:not(.users-section .reset-password-btn) {
   color: var(--color-neutral-white) !important;
-  border-color: var(--color-brand-secondary-alpha-20) !important;
+  border-color: var(--color-brand-primary-alpha-20) !important;
 }
 
 [data-theme="light"] .reset-password-btn:not(.users-section .reset-password-btn):hover:not(:disabled) {
   background: var(--color-brand-primary-alpha-20) !important;
-  border-color: var(--color-brand-secondary-500) !important;
+  border-color: var(--color-brand-primary-500) !important;
   color: var(--color-brand-primary-300) !important;
-  box-shadow: 0 0 8px var(--color-brand-secondary-alpha-30) !important;
+  box-shadow: 0 0 8px var(--color-brand-primary-alpha-30) !important;
 }
 
 [data-theme="light"] .empty-state,
@@ -4565,12 +4643,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* Tab buttons keep dark mode styles - no light mode overrides for colors/hover */
 
-/* Remove gold icons in light mode - all icons same dark color */
 [data-theme="light"] .info-icon {
-  color: var(--color-brand-primary-500);
-}
-
-[data-theme="light"] .info-card:nth-child(even) .info-icon {
   color: var(--color-brand-primary-500);
 }
 

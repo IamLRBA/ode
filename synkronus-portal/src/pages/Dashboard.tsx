@@ -686,8 +686,6 @@ export function Dashboard() {
 
   return (
     <div className="dashboard" style={{ '--dashboard-bg-image': `url(${dashboardBackground})` } as React.CSSProperties}>
-      <div className="gold-circle-1"></div>
-      <div className="gold-circle-2"></div>
       <header className={`dashboard-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content">
           <div className="logo-section">
@@ -1168,6 +1166,8 @@ export function Dashboard() {
                       </button>
                     </div>
                   </div>
+                  <div className="users-table-section">
+                  <div className="table-container">
                   <table className="users-table">
                     <thead>
                       <tr>
@@ -1238,6 +1238,7 @@ export function Dashboard() {
                         ))}
                     </tbody>
                   </table>
+                  </div>
                   {users.filter((u) => {
                     if (!userSearchQuery) return true
                     const query = userSearchQuery.toLowerCase()
@@ -1266,6 +1267,7 @@ export function Dashboard() {
                       )}
                     </div>
                   )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1347,6 +1349,7 @@ export function Dashboard() {
                     </div>
                   </div>
 
+                  <div className="observations-table-section">
                   {observations.filter((obs) => {
                     if (!observationSearchQuery) return true
                     const query = observationSearchQuery.toLowerCase()
@@ -1465,6 +1468,7 @@ export function Dashboard() {
                       <p>No observations found</p>
                     </div>
                   )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1676,7 +1680,7 @@ export function Dashboard() {
       {/* Create User Modal */}
       {showCreateUserModal && (
         <div className="modal-overlay" onClick={handleCloseCreateUserModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content modal-create-user" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Create New User</h2>
               <button className="modal-close" onClick={handleCloseCreateUserModal}>×</button>
