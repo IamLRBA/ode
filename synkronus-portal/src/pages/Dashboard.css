@@ -1674,7 +1674,7 @@ html::-webkit-scrollbar-thumb:hover {
 .stat-value {
   margin: 0;
   font-size: var(--font-size-2xl, 28px);
-  font-weight: var(--font-weight-bold, 700);
+  font-weight: var(--font-weight-regular, 400);
   color: var(--color-neutral-white, #ffffff);
   line-height: var(--font-line-height-tight, 1.2);
   letter-spacing: var(--font-letter-spacing-tight, -0.5px);
@@ -3875,6 +3875,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--color-neutral-white);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
+}
+
+[data-theme="light"] .health-status-title {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 .health-status-text {
